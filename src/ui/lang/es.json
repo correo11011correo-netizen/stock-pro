@@ -1,0 +1,17 @@
+{
+  "menu_stock": "📦 Stock",
+  "menu_sales": "🛒 Ventas",
+  "menu_reports": "📊 Reportes",
+  "menu_settings": "⚙️ Ajustes",
+  "btn_save": "Guardar",
+  "btn_cancel": "Cancelar",
+  "btn_pay": "Cobrar Venta",
+  "lbl_product_name": "Nombre del Producto",
+  "lbl_price": "Precio $",
+  "lbl_qty": "Cantidad",
+  "lbl_category": "Categoría",
+  "msg_success": "Operación exitosa",
+  "msg_error": "Ocurrió un error",
+  "msg_low_stock": "Alerta de Stock Bajo",
+  "msg_pro_only": "Esta función es exclusiva de la versión PRO"
+}

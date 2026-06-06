@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Pro - App Híbrida</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="img/icon-192.png">
+</head>
+<body>
+    <div id="app">
+        <!-- Pantalla de Login (Online Obligatorio) -->
+        <div id="screen-login" class="screen">
+            <div class="login-box">
+                <h1>Stock Pro</h1>
+                <p class="subtitle">Inicia sesión para sincronizar datos</p>
+                <input type="text" id="login-user" placeholder="Usuario">
+                <input type="password" id="login-pass" placeholder="Contraseña">
+                <button onclick="app.handleLogin()" id="btn-login">Entrar</button>
+                <p id="login-error" class="error"></p>
+            </div>
+        </div>
+
+        <!-- Pantalla Principal -->
+        <div id="screen-main" class="screen hidden">
+            <header>
+                <div class="user-info">
+                    <span id="user-name-display">Usuario</span>
+                    <span id="user-role-badge" class="badge">Rol</span>
+                </div>
+                <div id="sync-status" class="status-online">Online</div>
+                <button onclick="app.logout()" class="btn-logout" style="background:none; border:1px solid #334155; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Salir</button>
+            </header>
+
+            <nav class="tab-container">
+                <button class="tab-btn active" onclick="app.showTab('stock')">📦 Stock</button>
+                <button class="tab-btn" onclick="app.showTab('ventas')">💰 Ventas</button>
+                <button class="tab-btn hidden" id="btn-admin-tab" onclick="app.showTab('admin')">⚙️ Admin</button>
+                <button class="tab-btn" onclick="app.syncNow()">🔄 Sync</button>
+            </nav>
+
+            <main id="main-content">
+                <!-- Tab Stock -->
+                <div id="tab-stock" class="tab-content">
+                    <div class="search-bar">
+                        <input type="text" id="stock-search" placeholder="Buscar producto..." oninput="app.searchStock()">
+                        <button onclick="app.searchStock()">🔍</button>
+                    </div>
+                    <div id="stock-list" class="list"></div>
+                </div>
+
+                <!-- Tab Ventas -->
+                <div id="tab-ventas" class="tab-content hidden">
+                    <div class="cart-container">
+                        <h3>Carrito de Venta</h3>
+                        <div id="cart-list" class="list"></div>
+                        <div class="cart-footer">
+                            <span class="total">Total: <strong id="cart-total">0.00</strong></span>
+                            <button onclick="app.processSale()">Finalizar Venta</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Admin (Carga Dinámica/Online) -->
+                <div id="tab-admin" class="tab-content hidden">
+                    <div class="admin-panel">
+                        <h3>Panel Administrativo</h3>
+                        <p>Este módulo requiere conexión activa al servidor.</p>
+                        <div class="admin-grid">
+                            <button onclick="app.adminAction('inventario')">📦<span>Inventario</span></button>
+                            <button onclick="app.adminAction('reportes')">📈<span>Reportes</span></button>
+                            <button onclick="app.adminAction('usuarios')">👥<span>Usuarios</span></button>
+                            <button onclick="app.adminAction('config')">⚙️<span>Config</span></button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/db-local.js"></script>
+    <script src="js/sync-engine.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registrado:', reg.scope))
+                    .catch(err => console.log('Error registrando SW:', err));
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Stock Pro — Admin OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --accent: #6366f1; 
+      --accent-hover: #818cf8;
+      --glass: rgba(30, 41, 59, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --bg-dark: #0f172a;
+    }
+    body { 
+      background: radial-gradient(circle at top left, #1e293b, #0f172a); 
+      color: #f1f5f9; 
+      font-family: 'Inter', sans-serif; 
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.1;
+    }
+    body::before { background: var(--accent); top: -50px; right: -50px; }
+    body::after { background: #ec4899; bottom: -50px; left: -50px; }
+
+    .glass-card { 
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .bottom-dock {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .nav-item { @apply flex flex-col items-center justify-center gap-1 transition-all duration-300 cursor-pointer; }
+    .nav-item.active { @apply text-indigo-400 scale-110; }
+    .nav-item.active svg { @apply stroke-indigo-400 fill-indigo-400/10; }
+    
+    .badge-pro { @apply bg-indigo-600/80 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider; }
+    .badge-free { @apply bg-slate-600/50 text-slate-200 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider; }
+    
+    .btn-action { 
+      @apply px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 text-white;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    }
+
+    .input-field { 
+      @apply rounded-xl px-4 py-3 text-sm w-full transition-all outline-none bg-slate-900/80 border border-white/10 text-white;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .modal-overlay { @apply fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-end justify-center z-50 transition-all; }
+    .modal-sheet { 
+      @apply rounded-t-3xl p-6 w-full max-w-lg transition-transform duration-300 ease-out;
+      background: #1e293b;
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    .toast { @apply fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl text-sm font-bold shadow-2xl z-50 transition-all; }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+<div id="login-screen" class="min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-sm text-center">
+    <div class="mb-10">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-indigo-600 rounded-3xl mb-6 shadow-2xl shadow-indigo-500/50">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <h1 class="text-3xl font-extrabold text-white tracking-tight">Admin OS</h1>
+      <p class="text-slate-400 text-sm mt-2">Stock Pro Enterprise Control</p>
+    </div>
+    <div class="glass-card p-8 rounded-3xl">
+      <form id="login-form" class="flex flex-col gap-5">
+        <div class="text-left">
+          <label class="block text-slate-400 text-xs font-bold mb-2 ml-1 uppercase tracking-wider">Usuario</label>
+          <input id="login-username" type="text" class="input-field" placeholder="admin" required />
+        </div>
+        <div class="text-left">
+          <label class="block text-slate-400 text-xs font-bold mb-2 ml-1 uppercase tracking-wider">Contraseña</label>
+          <input id="login-password" type="password" class="input-field" placeholder="••••••••" required />
+        </div>
+        <div id="login-error" class="hidden text-red-400 text-xs bg-red-900/30 border border-red-800 rounded-xl p-3 text-center"></div>
+        <button type="submit" class="btn-action w-full py-4 mt-2 text-base">Iniciar Sesión</button>
+      </form>
+    </div>
+    <p class="text-slate-400 text-xs mt-8">
+      ¿Configuración inicial? <br>
+      <button id="btn-setup-master" class="text-indigo-400 font-bold underline underline-offset-4 mt-1">Crear cuenta MASTER</button>
+    </p>
+  </div>
+</div>
+
+<div id="app" class="hidden min-h-screen">
+  <header class="p-6 flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="header-title">Dashboard</h2>
+      <p class="text-slate-400 text-xs" id="header-subtitle">Bienvenido, Master Admin</p>
+    </div>
+    <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg" id="sidebar-avatar">M</div>
+  </header>
+
+  <main class="px-6">
+    <section id="section-dashboard" class="section active">
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="glass-card p-4 rounded-2xl">
+          <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Negocios</p>
+          <p class="text-2xl font-extrabold text-white" id="kpi-tenants">—</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl">
+          <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Usuarios</p>
+          <p class="text-2xl font-extrabold text-white" id="kpi-users">—</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-emerald-500">
+          <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Activos</p>
+          <p class="text-2xl font-extrabold text-emerald-400" id="kpi-active">—</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border-l-4 border-l-red-500">
+          <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Suspendidos</p>
+          <p class="text-2xl font-extrabold text-red-400" id="kpi-suspended">—</p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-6">
+        <div class="glass-card p-5 rounded-3xl">
+          <h3 class="text-white font-bold mb-4 text-sm">Distribución de Planes</h3>
+          <div id="plan-breakdown" class="flex flex-col gap-4"></div>
+        </div>
+        <div class="glass-card p-5 rounded-3xl">
+          <h3 class="text-white font-bold mb-4 text-sm">Negocios Recientes</h3>
+          <div id="recent-tenants" class="flex flex-col gap-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-tenants" class="section">
+      <div class="flex gap-3 mb-6">
+        <input id="tenant-search" type="text" class="input-field" placeholder="Buscar negocio..." oninput="debouncedTenantSearch()" />
+        <button onclick="loadTenants()" class="glass-card p-3 rounded-xl">↻</button>
+      </div>
+      <div id="tenants-list" class="flex flex-col gap-4"></div>
+      <div id="tenant-pagination" class="flex justify-center gap-4 py-6"></div>
+    </section>
+
+    <section id="section-users" class="section">
+      <div class="flex gap-3 mb-6">
+        <input id="user-search" type="text" class="input-field" placeholder="Buscar usuario..." oninput="debouncedUserSearch()" />
+        <button onclick="loadUsers()" class="glass-card p-3 rounded-xl">↻</button>
+      </div>
+      <div id="users-list" class="flex flex-col gap-4"></div>
+      <div id="user-pagination" class="flex justify-center gap-4 py-6"></div>
+    </section>
+
+    <section id="section-audit" class="section">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-white font-bold">Historial de Auditoría</h3>
+        <button onclick="loadAuditLogs()" class="glass-card p-2 rounded-lg text-xs">↻</button>
+      </div>
+      <div id="audit-list" class="flex flex-col gap-3"></div>
+      <div id="audit-pagination" class="flex justify-center gap-4 py-6"></div>
+    </section>
+
+    <section id="section-setup" class="section">
+      <div class="max-w-sm mx-auto text-center py-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl mb-4 shadow-xl shadow-indigo-500/40">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        </div>
+        <h3 class="text-white font-bold text-xl mb-2">Configuración Maestro</h3>
+        <p class="text-slate-400 text-sm mb-8">Sistematizando acceso global</p>
+        <form id="setup-form" class="flex flex-col gap-5 text-left">
+          <div>
+            <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Usuario Maestro</label>
+            <input id="setup-username" type="text" class="input-field" placeholder="Nombre de Usuario" required />
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Contraseña Maestra</label>
+            <input id="setup-password" type="password" class="input-field" placeholder="Contraseña Maestra" required />
+          </div>
+          <div id="setup-error" class="hidden text-red-400 text-xs bg-red-900/30 border border-red-800 rounded-xl p-3 text-center"></div>
+          <button type="submit" class="btn-action w-full py-4 mt-4">Finalizar Configuración</button>
+          <button type="button" onclick="showSection('login')" class="text-slate-500 text-xs font-medium py-2 w-full text-center">Volver al Login</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-dock fixed bottom-0 left-0 right-0 h-20 flex items-center justify-around px-6 z-40">
+    <div onclick="showSection('dashboard')" class="nav-item active" id="nav-dashboard">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+      <span class="text-[10px] font-medium uppercase">Home</span>
+    </div>
+    <div onclick="showSection('tenants')" class="nav-item" id="nav-tenants">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+      <span class="text-[10px] font-medium uppercase">Negocios</span>
+    </div>
+    <div onclick="showSection('users')" class="nav-item" id="nav-users">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-// 0v1z"></path></svg>
+      <span class="text-[10px] font-medium uppercase">Usuarios</span>
+    </div>
+    <div onclick="showSection('audit')" class="nav-item" id="nav-audit">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+      <span class="text-[10px] font-medium uppercase">Audit</span>
+    </div>
+    <div onclick="logout()" class="nav-item text-red-400">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+      <span class="text-[10px] font-medium uppercase">Salir</span>
+    </div>
+  </nav>
+</div>
+
+<div id="modal-subscription" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div class="w-12 h-1.5 bg-slate-600 rounded-full mx-auto mb-6"></div>
+    <h3 class="text-white font-bold text-lg mb-1">Gestionar Suscripción</h3>
+    <p class="text-slate-400 text-sm mb-6" id="sub-modal-tenant-name">—</p>
+    <form id="sub-form" class="flex flex-col gap-5">
+      <input type="hidden" id="sub-tenant-id">
+      <div>
+        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Plan de Servicio</label>
+        <select id="sub-plan" class="input-field">
+          <option value="FREE">Plan FREE (Básico)</option>
+          <option value="PRO">Plan PRO (Avanzado)</option>
+          <option value="ENTERPRISE">Plan ENTERPRISE (Corporativo)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Suma de Créditos</label>
+        <input id="sub-credits" type="number" min="0" value="0" class="input-field" placeholder="0">
+      </div>
+      <div id="sub-error" class="hidden text-red-400 text-xs bg-red-900/30 border border-red-800 rounded-xl p-3 text-center"></div>
+      <div class="flex gap-3 mt-4">
+        <button type="button" onclick="closeModal('modal-subscription')" class="btn-ghost flex-1 py-3 rounded-xl font-bold text-slate-300 bg-white/5">Cancelar</button>
+        <button type="submit" class="btn-action flex-1 py-3">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="modal-user-status" class="modal-overlay hidden">
+  <div class="modal-sheet max-w-sm text-center">
+    <h3 class="text-white font-bold text-lg mb-2" id="user-modal-title">—</h3>
+    <p class="text-slate-400 text-sm mb-8" id="user-modal-subtitle">—</p>
+    <input type="hidden" id="user-modal-id">
+    <input type="hidden" id="user-modal-action">
+    <div class="flex gap-3">
+      <button type="button" onclick="closeModal('modal-user-status')" class="btn-ghost flex-1 py-3 rounded-xl font-bold text-slate-300 bg-white/5">Cancelar</button>
+      <button type="button" id="user-modal-confirm-btn" onclick="confirmUserAction()" class="btn-action flex-1 py-3">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+let authToken = sessionStorage.getItem('admin_token') || null;
+let currentSection = 'dashboard';
+let tenantPage = 1, userPage = 1, auditPage = 1;
+let tenantSearch = '', userSearch = '';
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type === 'success' ? 'bg-emerald-700 text-white' : 'bg-red-700 text-white'}`;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3500);
+}
+
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function planBadge(plan) {
+  const p = (plan || 'FREE').toUpperCase();
+  if (p === 'PRO') return `<span class="badge-pro">${p}</span>`;
+  if (p === 'ENTERPRISE') return `<span class="badge-enterprise">${p}</span>`;
+  return `<span class="badge-free">${p}</span>`;
+}
+
+function statusBadge(isActive) {
+  return isActive !== false
+    ? `<span class="text-emerald-400 text-[10px] font-bold uppercase">Activo</span>`
+    : `<span class="text-red-400 text-[10px] font-bold uppercase">Suspendido</span>`;
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('es', { day: '2-digit', month: 'short' });
+}
+
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+const debouncedTenantSearch = debounce(() => { tenantPage = 1; tenantSearch = document.getElementById('tenant-search').value; loadTenants(); }, 400);
+const debouncedUserSearch   = debounce(() => { userPage = 1;   userSearch   = document.getElementById('user-search').value;   loadUsers();   }, 400);
+
+async function api(method, path, body = null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': authToken || '' }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(path, opts);
+  const json = await res.json();
+  return json.payload !== undefined ? json.payload : json;
+}
+
+async function handleLoginSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  const errEl = document.getElementById('login-error');
+  btn.textContent = 'Autenticando...';
+  errEl.classList.add('hidden');
+  try {
+    const res = await api('POST', '/api/admin/login', {
+      username: document.getElementById('login-username').value,
+      password: document.getElementById('login-password').value
+    });
+    if (res.status === 'success') {
+      authToken = res.token;
+      sessionStorage.setItem('admin_token', authToken);
+      const username = res.user?.username || 'master';
+      document.getElementById('sidebar-avatar').textContent = username[0].toUpperCase();
+      showApp();
+    } else {
+      errEl.textContent = res.message || 'Error de autenticación.';
+      errEl.classList.remove('hidden');
+    }
+  } catch (err) {
+    errEl.textContent = 'Error de conexión.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.textContent = 'Iniciar Sesión';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  loadDashboard();
+}
+
+function logout() {
+  authToken = null;
+  sessionStorage.removeItem('admin_token');
+  location.reload();
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+  const section = document.getElementById(`section-${name}`);
+  if (section) section.classList.add('active');
+  const nav = document.getElementById(`nav-${name}`);
+  if (nav) nav.classList.add('active');
+  currentSection = name;
+  const titles = { 'dashboard': 'Dashboard', 'tenants': 'Negocios', 'users': 'Usuarios', 'audit': 'Auditoría', 'setup': 'Configuración Inicial' };
+  document.getElementById('header-title').textContent = titles[name] || 'Admin OS';
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'tenants')   loadTenants();
+  if (name === 'users')     loadUsers();
+  if (name === 'audit')     loadAuditLogs();
+}
+
+async function loadDashboard() {
+  try {
+    const res = await api('GET', '/api/admin/dashboard');
+    if (res.status !== 'success') return;
+    const d = res.data;
+    document.getElementById('kpi-tenants').textContent   = d.total_tenants ?? '0';
+    document.getElementById('kpi-users').textContent     = d.total_users ?? '0';
+    document.getElementById('kpi-active').textContent    = d.active_users ?? '0';
+    document.getElementById('kpi-suspended').textContent = d.suspended_users ?? '0';
+    const pb = document.getElementById('plan-breakdown');
+    if (d.plan_breakdown && d.plan_breakdown.length) {
+      const total = d.total_tenants || 1;
+      pb.innerHTML = d.plan_breakdown.map(p => `
+        <div class="flex flex-col gap-1">
+          <div class="flex justify-between text-[10px] uppercase font-bold">
+            <span class="text-slate-400">${p.plan}</span>
+            <span class="text-slate-300">${p.count} (${Math.round((p.count/total)*100)}%)</span>
+          </div>
+          <div class="h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full ${p.plan === 'PRO' ? 'bg-indigo-500' : 'bg-slate-500'}" style="width:${(p.count/total)*100}%"></div>
+          </div>
+        </div>`).join('');
+    }
+    const rt = document.getElementById('recent-tenants');
+    if (d.recent_tenants && d.recent_tenants.length) {
+      rt.innerHTML = d.recent_tenants.map(t => `
+        <div class="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/5">
+          <span class="text-slate-200 text-sm font-medium">${t.business_name || '—'}</span>
+          <div class="flex items-center gap-2">
+            ${planBadge(t.plan)}
+            <span class="text-slate-500 text-[10px]">${fmtDate(t.created_at)}</span>
+          </div>
+        </div>`).join('');
+    }
+  } catch (err) { console.error(err); }
+}
+
+async function loadTenants() {
+  const list = document.getElementById('tenants-list');
+  list.innerHTML = '<p class="text-center text-slate-500 py-10">Cargando negocios...</p>';
+  try {
+    const res = await api('GET', `/api/admin/tenants?page=${tenantPage}&per_page=20&search=${encodeURIComponent(tenantSearch)}`);
+    if (res.status !== 'success') { list.innerHTML = `<p class="text-center text-red-400">${res.message}</p>`; return; }
+    if (!res.data.length) {
+      list.innerHTML = '<p class="text-center text-slate-500 py-10">No se encontraron negocios.</p>';
+    } else {
+      list.innerHTML = res.data.map(t => `
+        <div class="glass-card p-4 rounded-3xl flex flex-col gap-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-white font-bold text-base">${t.business_name || '—'}</p>
+              <p class="text-slate-500 text-xs font-mono">${t.id}</p>
+            </div>
+            ${planBadge(t.plan)}
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-white/5 p-2 rounded-lg text-center">
+              <p class="text-slate-500 text-[10px] uppercase font-bold">Créditos</p>
+              <p class="text-white font-bold">${t.credits ?? 0}</p>
+            </div>
+            <div class="bg-white/5 p-2 rounded-lg text-center">
+              <p class="text-slate-500 text-[10px] uppercase font-bold">Usuarios</p>
+              <p class="text-white font-bold">${t.user_count ?? 0}</p>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="openSubModal('${t.id}', '${(t.business_name||'').replace(/'/g,"'")}', '${t.plan}')" class="btn-action flex-1 py-2 text-xs">Suscripción</button>
+            <button onclick="deleteTenant('${t.id}')" class="btn-ghost px-4 py-2 rounded-xl text-red-400 text-xs font-bold bg-red-900/20">Eliminar</button>
+          </div>
+        </div>`).join('');
+    }
+    renderPagination('tenant-pagination', tenantPage, res.pages, (p) => { tenantPage = p; loadTenants(); });
+  } catch (err) { list.innerHTML = `<p class="text-center text-red-400">Error: ${err.message}</p>`; }
+}
+
+async function deleteTenant(tenantId) {
+  if (!confirm(`¿Eliminar negocio ${tenantId}?`)) return;
+  try {
+    const res = await api('POST', `/api/admin/tenants/${tenantId}/delete`);
+    if (res.status === 'success') { showToast('Negocio eliminado.'); loadTenants(); }
+    else { showToast(res.message, 'error'); }
+  } catch (err) { showToast(`Error: ${err.message}`, 'error'); }
+}
+
+function openSubModal(tenantId, tenantName, currentPlan) {
+  document.getElementById('sub-tenant-id').value = tenantId;
+  document.getElementById('sub-modal-tenant-name').textContent = tenantName;
+  document.getElementById('sub-plan').value = currentPlan || 'FREE';
+  document.getElementById('sub-credits').value = 0;
+  document.getElementById('sub-error').classList.add('hidden');
+  openModal('modal-subscription');
+}
+
+document.getElementById('sub-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('sub-error');
+  errEl.classList.add('hidden');
+  const tenantId = document.getElementById('sub-tenant-id').value;
+  const plan     = document.getElementById('sub-plan').value;
+  const credits  = parseInt(document.getElementById('sub-credits').value) || 0;
+  try {
+    const res = await api('POST', `/api/admin/tenants/${tenantId}/subscription`, { plan, credits });
+    if (res.status === 'success') {
+      showToast('Suscripción actualizada.');
+      closeModal('modal-subscription');
+      loadTenants();
+    } else {
+      errEl.textContent = res.message || 'Error.';
+      errEl.classList.remove('hidden');
+    }
+  } catch (err) {
+    errEl.textContent = `Error: ${err.message}`;
+    errEl.classList.remove('hidden');
+  }
+});
+
+async function loadUsers() {
+  const list = document.getElementById('users-list');
+  list.innerHTML = '<p class="text-center text-slate-500 py-10">Cargando usuarios...</p>';
+  try {
+    const res = await api('GET', `/api/admin/users?page=${userPage}&per_page=30&search=${encodeURIComponent(userSearch)}`);
+    if (res.status !== 'success') { list.innerHTML = `<p class="text-center text-red-400">${res.message}</p>`; return; }
+    if (!res.data.length) {
+      list.innerHTML = '<p class="text-center text-slate-500 py-10">No hay usuarios.</p>';
+    } else {
+      list.innerHTML = res.data.map(u => `
+        <div class="glass-card p-4 rounded-3xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center font-bold text-white">${u.username[0].toUpperCase()}</div>
+            <div>
+              <p class="text-white font-bold text-sm">${u.username}</p>
+              <p class="text-slate-500 text-[10px] font-mono">${u.id}</p>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            ${statusBadge(u.is_active)}
+            <div class="flex gap-1">
+              <button onclick="openUserStatusModal('${u.id}', '${u.username.replace(/'/g,"'")}', ${u.is_active !== false})" class="text-[10px] font-bold ${u.is_active !== false ? 'text-red-400' : 'text-emerald-400'}">
+                ${u.is_active !== false ? 'Suspender' : 'Activar'}
+              </button>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+    renderPagination('user-pagination', userPage, res.pages, (p) => { userPage = p; loadUsers(); });
+  } catch (err) { list.innerHTML = `<p class="text-center text-red-400">Error: ${err.message}</p>`; }
+}
+
+function openUserStatusModal(userId, username, isSuspending) {
+  document.getElementById('user-modal-id').value = userId;
+  document.getElementById('user-modal-action').value = isSuspending ? 'suspend' : 'activate';
+  document.getElementById('user-modal-title').textContent = isSuspending ? 'Suspender Usuario' : 'Reactivar Usuario';
+  document.getElementById('user-modal-subtitle').textContent = isSuspending
+    ? `¿Estás seguro de suspender la cuenta de "${username}"?`
+    : `¿Deseas reactivar la cuenta de "${username}"?`;
+  const btn = document.getElementById('user-modal-confirm-btn');
+  btn.className = isSuspending ? 'btn-action bg-red-600' : 'btn-action bg-emerald-600';
+  btn.textContent = isSuspending ? 'Suspender Ahora' : 'Reactivar Ahora';
+  openModal('modal-user-status');
+}
+
+async function confirmUserAction() {
+  const userId  = document.getElementById('user-modal-id').value;
+  const action  = document.getElementById('user-modal-action').value;
+  try {
+    const res = await api('POST', `/api/admin/users/${userId}/status`, { suspend: action === 'suspend' });
+    if (res.status === 'success') {
+      showToast(res.message || 'Operación exitosa.');
+      closeModal('modal-user-status');
+      loadUsers();
+    } else {
+      showToast(res.message, 'error');
+    }
+  } catch (err) { showToast(`Error: ${err.message}`, 'error'); }
+}
+
+async function loadAuditLogs() {
+  const list = document.getElementById('audit-list');
+  list.innerHTML = '<p class="text-center text-slate-500 py-10">Cargando auditoría...</p>';
+  try {
+    const res = await api('GET', `/api/admin/audit-logs?page=${auditPage}&per_page=50`);
+    if (res.status !== 'success') { list.innerHTML = `<p class="text-center text-red-400">${res.message}</p>`; return; }
+    if (!res.data.length) {
+      list.innerHTML = '<p class="text-center text-slate-500 py-10">Sin registros.</p>';
+    } else {
+      list.innerHTML = res.data.map(l => `
+        <div class="glass-card p-4 rounded-2xl border-l-4 ${l.action.includes('DELETE') ? 'border-l-red-500' : 'border-l-indigo-500'}">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-white font-bold text-xs">${l.action}</span>
+            <span class="text-slate-500 text-[10px]">${fmtDate(l.created_at)}</span>
+          </div>
+          <p class="text-slate-400 text-xs">${l.details || 'Sin detalles'}</p>
+          <p class="text-indigo-400 text-[10px] font-bold mt-2 uppercase tracking-tighter">${l.admin_username || l.admin_id}</p>
+        </div>`).join('');
+    }
+    renderPagination('audit-pagination', auditPage, res.pages, (p) => { auditPage = p; loadAuditLogs(); });
+  } catch (err) { list.innerHTML = `<p class="text-center text-red-400">Error: ${err.message}</p>`; }
+}
+
+function renderPagination(containerId, currentPage, totalPages, onPageChange) {
+  const el = document.getElementById(containerId);
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+  const prev = currentPage > 1
+    ? `<button onclick="(${onPageChange.toString()})(${currentPage - 1})" class="glass-card px-3 py-1 rounded-lg text-xs">←</button>`
+    : `<span></span>`;
+  const next = currentPage < totalPages
+    ? `<button onclick="(${onPageChange.toString()})(${currentPage + 1})" class="glass-card px-3 py-1 rounded-lg text-xs">→</button>`
+    : `<span></span>`;
+  el.innerHTML = `${prev}<span class="text-slate-400 text-xs mx-4">Página ${currentPage}/${totalPages}</span>${next}`;
+}
+
+function showSetupModal() { showSection('setup'); }
+
+async function handleSetupSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.textContent = 'Creando...';
+  try {
+    const data = await api('POST', '/api/admin/setup', { 
+      username: document.getElementById('setup-username').value, 
+      password: document.getElementById('setup-password').value 
+    });
+    if (data.status === 'success') {
+      showToast('Cuenta MASTER creada.');
+      showSection('login');
+      document.getElementById('login-username').value = document.getElementById('setup-username').value;
+    } else {
+      showToast(data.message, 'error');
+    }
+  } catch (err) { showToast('Error de conexión', 'error'); } finally { btn.textContent = 'Finalizar'; }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('setup-form').addEventListener('submit', handleSetupSubmit);
+  document.getElementById('login-form').addEventListener('submit', handleLoginSubmit);
+  
+  const setupBtn = document.getElementById('btn-setup-master');
+  if (setupBtn) {
+    setupBtn.addEventListener('click', () => {
+      showSetupModal();
+    });
+  }
+
+  if (authToken) showApp();
+});
+</script>
+</body>
+</html>

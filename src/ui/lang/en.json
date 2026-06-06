@@ -1,0 +1,22 @@
+{
+  "menu_stock": "📦 Stock",
+  "menu_sales": "🛒 Sales",
+  "menu_reports": "📊 Reports",
+  "menu_settings": "⚙️ Settings",
+  "menu_alias": "🏷️ Alias",
+  "menu_import": "📥 Import Stock",
+  "menu_subscription": "💳 Subscriptions",
+  "menu_personnel": "👥 Personnel",
+  "btn_save": "Save",
+  "btn_cancel": "Cancel",
+  "btn_pay": "Charge Sale",
+  "lbl_product_name": "Product Name",
+  "lbl_price": "Price $",
+  "lbl_qty": "Quantity",
+  "lbl_category": "Category",
+  "msg_success": "Operation successful",
+  "msg_error": "An error occurred",
+  "msg_low_stock": "Low Stock Alert",
+  "msg_pro_only": "This feature is exclusive to the PRO version"
+}
+
