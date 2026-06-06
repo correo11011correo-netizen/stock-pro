@@ -53,14 +53,47 @@
 
                 <!-- Tab Ventas -->
                 <div id="tab-ventas" class="tab-content hidden">
-                    <div class="cart-container">
-                        <h3>Carrito de Venta</h3>
-                        <div id="cart-list" class="list"></div>
-                        <div class="cart-footer">
-                            <span class="total">Total: <strong id="cart-total">0.00</strong></span>
-                            <button onclick="app.processSale()">Finalizar Venta</button>
+
+                    <!-- Buscador con autocompletado -->
+                    <div class="ventas-search-section">
+                        <div class="search-bar" style="position:relative;">
+                            <input
+                                type="text"
+                                id="ventas-search"
+                                placeholder="Buscar por código o nombre..."
+                                oninput="app.onVentasSearchInput()"
+                                autocomplete="off"
+                            >
+                            <button onclick="app.searchVentas()">🔍</button>
+                            <div id="ventas-autocomplete" class="autocomplete-dropdown hidden"></div>
                         </div>
                     </div>
+
+                    <!-- Productos más vendidos -->
+                    <div id="bestsellers-section" class="bestsellers-section">
+                        <h4 class="section-title">🔥 Más Vendidos</h4>
+                        <div id="bestsellers-list" class="list"></div>
+                    </div>
+
+                    <!-- Resultados de búsqueda -->
+                    <div id="ventas-results-section" class="hidden">
+                        <h4 class="section-title">📋 Resultados</h4>
+                        <div id="ventas-stock-list" class="list"></div>
+                    </div>
+
+                    <!-- Carrito -->
+                    <div class="cart-section">
+                        <h4 class="section-title">🛒 Carrito</h4>
+                        <div id="cart-list" class="list cart-list-inner"></div>
+                        <div class="cart-summary">
+                            <div class="cart-total-row">
+                                <span class="total-label">Total</span>
+                                <span class="total-amount">$<strong id="cart-total">0.00</strong></span>
+                            </div>
+                            <button class="btn-finalizar" onclick="app.processSale()">✅ Finalizar Venta</button>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Tab Admin (Carga Dinámica/Online) -->
