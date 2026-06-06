@@ -2,6 +2,7 @@
  * Stock & Scan Pro - Frontend Application
  * Maneja autenticación, multi-tenancy y comandos
  * ✅ VERSIÓN CON LOGS EXHAUSTIVOS PARA DEBUGGING
+ * ✨ NUEVA: Autocompletado inteligente en búsqueda de ventas
  */
 
 const API_BASE = '';
@@ -212,6 +213,59 @@ toastStyles.textContent = `
             max-width: 90vw;
         }
     }
+    
+    /* 🆕 ESTILOS PARA AUTOCOMPLETADO */
+    .search-results-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+    
+    .search-results-dropdown.active {
+        display: block;
+    }
+    
+    .search-result-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        transition: background 0.2s;
+    }
+    
+    .search-result-item:hover {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+    
+    .search-result-code {
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 0.9rem;
+    }
+    
+    .search-result-name {
+        color: var(--text);
+        margin-top: 2px;
+    }
+    
+    .search-result-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
 `;
 document.head.appendChild(toastStyles);
 
@@ -225,7 +279,9 @@ const app = {
         theme: localStorage.getItem('theme') || 'dark',
         lang: localStorage.getItem('lang') || 'es',
         cart: [],
-        translations: {}
+        translations: {},
+        selectedProduct: null, // 🆕 Producto seleccionado en búsqueda
+        selectedQuantity: 1    // 🆕 Cantidad seleccionada
     },
 
     async init() {
@@ -611,7 +667,7 @@ const app = {
     setupDebouncedHandlers() {
         Logger.log('SETUP', 'Configurando debounce handlers');
         this.debouncedLoadStock = debounce(() => this.loadStock());
-        this.debouncedQuickAdd = debounce(() => this.quickAddProduct());
+        this.debouncedQuickSearch = debounce(() => this.performQuickSearch(), 400); // 🆕
     },
 
     showModal(id) {
@@ -680,29 +736,134 @@ const app = {
         }
     },
 
-    // --- SALES MANAGEMENT ---
+    // --- SALES MANAGEMENT (CON AUTOCOMPLETADO) ---
 
-    async quickAddProduct() {
-        Logger.log('SALES', '🛒 Agregando producto al carrito...');
-        const codigo = document.getElementById('sale-scan')?.value;
-        if (!codigo || codigo.length < 2) {
-            Logger.warn('SALES', '⚠️ Código muy corto o vacío');
+    async performQuickSearch() {
+        Logger.log('SALES', '🔍 Ejecutando búsqueda rápida...');
+        const searchInput = document.getElementById('sale-scan');
+        const searchTerm = searchInput?.value.trim() || '';
+        const dropdown = document.getElementById('quick-results');
+        
+        if (!searchTerm || searchTerm.length < 1) {
+            if (dropdown) dropdown.classList.remove('active');
             return;
         }
-        Logger.log('SALES', `Código escaneado: ${codigo}`);
         
-        const res = await this.apiCall('venta.add', { codigo });
-        Logger.log('SALES', 'Respuesta:', res);
+        const res = await this.apiCall('venta.search', { search: searchTerm, limit: 8 });
+        Logger.log('SALES', 'Resultados búsqueda:', res);
         
-        if (res.status === 'success') {
-            Logger.success('SALES', '✅ Producto agregado al carrito');
-            this.state.cart.push(res.data);
-            this.renderCart();
-            document.getElementById('sale-scan').value = '';
-            Toast.success('Producto agregado');
+        if (res.status === 'success' && res.data && res.data.length > 0) {
+            this.renderSearchResults(res.data);
         } else {
-            Logger.error('SALES', `❌ Error: ${res.message}`);
-            Toast.error(res.message);
+            if (dropdown) {
+                dropdown.innerHTML = '<div style="padding: 12px 16px; color: var(--text-muted); text-align: center;">No se encontraron productos</div>';
+                dropdown.classList.add('active');
+            }
+        }
+    },
+
+    renderSearchResults(products) {
+        const dropdown = document.getElementById('quick-results');
+        if (!dropdown) {
+            Logger.warn('SALES', '⚠️ Dropdown de búsqueda no encontrado');
+            return;
+        }
+        
+        dropdown.innerHTML = '';
+        products.forEach((product, idx) => {
+            const item = document.createElement('div');
+            item.className = 'search-result-item';
+            item.innerHTML = `
+                <div class="search-result-code">${product.codigo}</div>
+                <div class="search-result-name">${product.nombre}</div>
+                <div class="search-result-meta">💲 $${parseFloat(product.precio || 0).toFixed(2)} | 📦 ${product.cantidad || 0} en stock</div>
+            `;
+            item.onclick = () => this.selectProductFromSearch(product);
+            dropdown.appendChild(item);
+        });
+        
+        dropdown.classList.add('active');
+    },
+
+    selectProductFromSearch(product) {
+        Logger.log('SALES', '✅ Producto seleccionado:', product);
+        this.state.selectedProduct = product;
+        this.state.selectedQuantity = 1;
+        
+        // Cargar UI de selección de cantidad
+        this.showQuantitySelector(product);
+    },
+
+    showQuantitySelector(product) {
+        Logger.log('SALES', '📦 Mostrando selector de cantidad');
+        
+        // Crear modal o usar elemento existente
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        `;
+        
+        modal.innerHTML = `
+            <div class="card" style="width: 100%; max-width: 400px; animation: popIn 0.3s ease;">
+                <h3 style="margin-top: 0; margin-bottom: 20px;">📦 ${product.nombre}</h3>
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(99, 102, 241, 0.1); border-radius: 8px;">
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Código: <strong>${product.codigo}</strong></div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">Precio: <strong>$${parseFloat(product.precio).toFixed(2)}</strong></div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">Disponibles: <strong>${product.cantidad}</strong></div>
+                </div>
+                <div class="form-group">
+                    <label>Cantidad a agregar:</label>
+                    <input type="number" id="qty-selector" class="input" value="1" min="1" max="${product.cantidad}" style="font-size: 1.2rem; text-align: center;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="this.closest('[style*=fixed]').remove()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="app.confirmProductSelection(this)">Agregar al carrito</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        document.getElementById('qty-selector').focus();
+    },
+
+    async confirmProductSelection(button) {
+        Logger.log('SALES', '✅ Confirmando selección de producto');
+        const modal = button.closest('[style*=fixed]');
+        const qtyInput = modal.querySelector('#qty-selector');
+        const quantity = parseInt(qtyInput.value) || 1;
+        
+        if (this.state.selectedProduct) {
+            const product = this.state.selectedProduct;
+            if (quantity > product.cantidad) {
+                Toast.warning(`Solo hay ${product.cantidad} productos disponibles`);
+                return;
+            }
+            
+            // Agregar al carrito CON la cantidad seleccionada
+            const cartItem = {
+                ...product,
+                cantidad: quantity,
+                quantity: quantity
+            };
+            
+            this.state.cart.push(cartItem);
+            Logger.success('SALES', '✅ Producto agregado al carrito', cartItem);
+            Toast.success(`${product.nombre} x${quantity} agregado al carrito`);
+            
+            // Limpiar búsqueda y cerrar modal
+            document.getElementById('sale-scan').value = '';
+            document.getElementById('quick-results').classList.remove('active');
+            modal.remove();
+            
+            // Actualizar carrito
+            this.renderCart();
         }
     },
 
@@ -1101,6 +1262,12 @@ const app = {
         Logger.log('LANG', `Cambiando idioma a: ${lang}`);
         this.state.lang = lang;
         localStorage.setItem('lang', lang);
+    },
+
+    // 🆕 MÉTODO AUXILIAR: Handler del input en búsqueda de ventas
+    handleSaleSearchInput() {
+        Logger.log('SALES', '⌨️ Input en búsqueda de ventas detectado');
+        this.debouncedQuickSearch();
     }
 };
 
