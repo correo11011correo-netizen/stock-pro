@@ -38,6 +38,7 @@ class CommandDispatcher:
             # --- STOCK ---
             "stock.list": (self._handle_stock_list, "gratis", False, "perm_stock_read"),
             "stock.get": (self._handle_stock_get, "gratis", False, "perm_stock_read"),
+            "stock.search": (self._handle_stock_search, "gratis", False, "perm_stock_read"),
             "stock.add": (self._handle_stock_add, "admin", False, "perm_stock_write"),
             "stock.edit": (self._handle_stock_edit, "admin", False, "perm_stock_write"),
             "stock.delete": (self._handle_stock_delete, "admin", False, "perm_stock_write"),
@@ -49,6 +50,7 @@ class CommandDispatcher:
             # --- VENTAS ---
             "venta.nueva": (self._handle_venta_nueva, "empleado", False, "perm_sales_create"),
             "venta.add": (self._handle_venta_add, "empleado", False, "perm_sales_create"),
+            "venta.search": (self._handle_venta_search, "empleado", False, "perm_sales_create"),
             "venta.cobrar": (self._handle_venta_cobrar, "empleado", False, "perm_sales_process"),
             "venta.cancelar": (self._handle_venta_cancelar, "empleado", False, "perm_sales_process"),
             
@@ -293,6 +295,32 @@ class CommandDispatcher:
             category=params.get("category")
         )
 
+    def _handle_stock_search(self, params):
+        """🆕 NUEVO: Búsqueda de productos para autocompletado.
+        Devuelve lista de productos que coincidan con el término de búsqueda (nombre o código).
+        Sin cargar cantidad automáticamente.
+        """
+        search_term = params.get("search", "").strip()
+        limit = params.get("limit", 10)
+        
+        if not search_term or len(search_term) < 1:
+            return {"status": "success", "data": []}
+        
+        # Buscar por código O nombre
+        query = """
+            SELECT codigo, nombre, precio, cantidad, categoria 
+            FROM products 
+            WHERE LOWER(codigo) LIKE LOWER(%s) OR LOWER(nombre) LIKE LOWER(%s)
+            LIMIT %s
+        """
+        search_pattern = f"%{search_term}%"
+        results = self.db.fetch_all(query, (search_pattern, search_pattern, limit))
+        
+        return {
+            "status": "success",
+            "data": [dict(r) for r in results]
+        }
+
     def _handle_stock_add(self, params):
         return self.stock_service.add_product(
             codigo=params.get("codigo"),
@@ -368,7 +396,37 @@ class CommandDispatcher:
             return {"status": "success", "data": res["data"], "message": "Producto agregado al carrito."}
         return res
 
-    def _handle_venta_cobrar (self, params):
+    def _handle_venta_search(self, params):
+        """🆕 NUEVO: Búsqueda rápida de productos para ventas.
+        Devuelve lista sin cargar automáticamente al carrito.
+        """
+        search_term = params.get("search", "").strip()
+        limit = params.get("limit", 8)
+        
+        if not search_term or len(search_term) < 1:
+            return {"status": "success", "data": []}
+        
+        # Buscar por código O nombre
+        query = """
+            SELECT codigo, nombre, precio, cantidad, categoria 
+            FROM products 
+            WHERE LOWER(codigo) LIKE LOWER(%s) OR LOWER(nombre) LIKE LOWER(%s)
+            ORDER BY CASE 
+                WHEN LOWER(codigo) LIKE LOWER(%s) THEN 0 
+                ELSE 1 
+            END,
+            nombre ASC
+            LIMIT %s
+        """
+        search_pattern = f"%{search_term}%"
+        results = self.db.fetch_all(query, (search_pattern, search_pattern, search_pattern, limit))
+        
+        return {
+            "status": "success",
+            "data": [dict(r) for r in results]
+        }
+
+    def _handle_venta_cobrar(self, params):
         return self.sales_service.process_sale(
             cliente=params.get("cliente"),
             items=params.get("items"),
