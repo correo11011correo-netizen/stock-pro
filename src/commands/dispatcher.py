@@ -120,9 +120,25 @@ class CommandDispatcher:
                 self.logger.error(f"Exception in GOD_MODE {command_str}: {e}")
                 return {"status": "error", "message": f"Error maestro: {str(e)}"}
 
-        # 3. Validar Licencia PRO
-        if is_pro_feature and not is_pro:
-            return {"status": "error", "message": "Esta función es exclusiva de la versión PRO. Por favor, actualiza tu licencia."}
+        # 3. Validar Licencia PRO y Entitlements
+        if is_pro_feature:
+            # Si el usuario ya es PRO por plan, tiene acceso. Si no, verificamos si tiene un entitlement específico.
+            # Nota: Para mayor granularidad, se podría mapear cada comando a un feature_id.
+            # Por ahora, validamos si el tenant tiene la licencia general de 'stock_pro_core' o es plan PRO.
+            
+            tenant_id = None
+            if self.auth_service:
+                # Intentamos obtener el tenant_id del contexto si es posible, o lo buscamos vía auth_service
+                # En el flujo actual de web_server.py, el dispatcher es instanciado por tenant.
+                # Pero el dispatcher no guarda el tenant_id. 
+                # Buscamos si el user_id está asociado a un tenant.
+                if user_id:
+                    user = self.auth_service.global_db.fetch_one("SELECT tenant_id FROM users WHERE id = %s", (user_id,))
+                    if user:
+                        tenant_id = user["tenant_id"]
+
+            if not is_pro and (not tenant_id or not self.auth_service.verify_feature(tenant_id, "stock_pro_core")):
+                return {"status": "error", "message": "Esta función es exclusiva de la versión PRO o requiere una licencia activa. Por favor, contacta al administrador."}
 
         # 4. Validar Acceso (PBAC)
         # El Dueño (OWNER) tiene acceso total a todo en su tenant

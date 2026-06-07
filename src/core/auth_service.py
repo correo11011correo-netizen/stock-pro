@@ -625,6 +625,38 @@ class AuthService:
             self.logger.error(f"Error fetching tenant detail: {e}")
             return {"status": "error", "message": str(e)}
 
+    def verify_feature(self, tenant_id: str, feature_id: str) -> bool:
+        """
+        Verifica si un tenant tiene una licencia activa para una funcionalidad específica.
+        Consulta la tabla 'entitlements' en la DB Global.
+        """
+        if not tenant_id or not feature_id:
+            return False
+        try:
+            from datetime import datetime, timezone
+            query = 'SELECT status, expires_at FROM entitlements WHERE tenant_id = %s AND feature_id = %s'
+            res = self.global_db.fetch_one(query, (tenant_id, feature_id))
+            
+            if not res or res['status'] != 'active':
+                return False
+            
+            expires_at = res['expires_at']
+            if expires_at and expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+            
+            if expires_at and expires_at < datetime.now(timezone.utc):
+                # Auto-revoke on expiration
+                self.global_db.execute(
+                    "UPDATE entitlements SET status = 'suspended' WHERE tenant_id = %s AND feature_id = %s",
+                    (tenant_id, feature_id)
+                )
+                return False
+                
+            return True
+        except Exception as e:
+            self.logger.error(f"Error verifying feature {feature_id} for tenant {tenant_id}: {e}")
+            return False
+
     def update_subscription(self, tenant_id: str, new_plan: str, additional_credits: int = 0) -> Dict[str, Any]:
         """Actualiza el plan de suscripción y añade créditos a un tenant."""
         try:
