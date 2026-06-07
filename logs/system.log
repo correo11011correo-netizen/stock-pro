@@ -449,3 +449,21 @@ LINE 1: SELECT * FROM products WHERE codigo = 'PROD-TEST-01'
                       ^
 
 2026-06-07 07:05:42,371 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 07:23:26,075 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 07:23:26,880 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 07:23:29,095 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 07:23:29,108 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:23:30,331 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "4d1f71e1-0898-42cf-b76b-df2668b4428b", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 07:23:32,654 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 07:23:33,614 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 07:23:33,615 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:23:34,632 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "4d1f71e1-0898-42cf-b76b-df2668b4428b", "filter": "Prueba"}
+2026-06-07 07:23:36,918 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 07:23:37,877 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:23:38,913 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 07:23:39,662 [INFO] CommandDispatcher: Executing command: sync.push | User Role: OWNER
+2026-06-07 07:23:40,428 [ERROR] DatabaseManager: FetchOne Error: SELECT * FROM products WHERE codigo = %s | Error: relation "products" does not exist
+LINE 1: SELECT * FROM products WHERE codigo = 'PROD-TEST-01'
+                      ^
+
+2026-06-07 07:23:40,680 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
