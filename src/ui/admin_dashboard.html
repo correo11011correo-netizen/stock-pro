@@ -328,11 +328,11 @@ async function handleLoginSubmit(e) {
   btn.textContent = 'Autenticando...';
   errEl.classList.add('hidden');
   try {
-    const res = await api('POST', '/api/admin/login', {
-      username: document.getElementById('login-username').value,
-      password: document.getElementById('login-password').value
-    });
-    if (res.status === 'success') {
+      const res = await api('POST', '/api/auth/login', {
+        username: document.getElementById('login-username').value,
+        password: document.getElementById('login-password').value
+      });
+      if (res.status === 'success') {
       authToken = res.token;
       sessionStorage.setItem('admin_token', authToken);
       const username = res.user?.username || 'master';
@@ -605,9 +605,24 @@ async function handleSetupSubmit(e) {
       password: document.getElementById('setup-password').value 
     });
     if (data.status === 'success') {
-      showToast('Cuenta MASTER creada.');
-      showSection('login');
-      document.getElementById('login-username').value = document.getElementById('setup-username').value;
+      showToast('Cuenta MASTER creada. Iniciando sesión...');
+      
+      // AUTO-LOGIN: Iniciar sesión inmediatamente después de crear la cuenta
+      const loginRes = await api('POST', '/api/admin/login', {
+        username: document.getElementById('setup-username').value,
+        password: document.getElementById('setup-password').value
+      });
+
+      if (loginRes.status === 'success') {
+        authToken = loginRes.token;
+        sessionStorage.setItem('admin_token', authToken);
+        const username = loginRes.user?.username || 'master';
+        document.getElementById('sidebar-avatar').textContent = username[0].toUpperCase();
+        showApp();
+      } else {
+        showToast('Cuenta creada, pero hubo un error al iniciar sesión.', 'error');
+        showSection('login');
+      }
     } else {
       showToast(data.message, 'error');
     }
