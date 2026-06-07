@@ -46,6 +46,7 @@ class CommandDispatcher:
             "stock.import": (self._handle_stock_import, "admin", False, "perm_stock_write"),
             "stock.import.preview": (self._handle_stock_import_preview, "admin", False, "perm_stock_write"),
             "stock.import.commit": (self._handle_stock_import_commit, "admin", False, "perm_stock_write"),
+            "stock.import.save_profile": (self._handle_stock_import_save_profile, "admin", False, "perm_stock_write"),
             
             # --- VENTAS ---
             "venta.nueva": (self._handle_venta_nueva, "empleado", False, "perm_sales_create"),
@@ -391,6 +392,21 @@ class CommandDispatcher:
             return {"status": "error", "message": "El parámetro 'data_list' es obligatorio y debe ser una lista."}
             
         return self.import_service.commit_import(data_list)
+
+    def _handle_stock_import_save_profile(self, params):
+        """
+        Guarda un mapeo de columnas personalizado como un perfil.
+        """
+        mapping_id = params.get("mapping_id")
+        mapping = params.get("mapping")
+        
+        if not mapping_id or not mapping:
+            return {"status": "error", "message": "Tanto 'mapping_id' como 'mapping' son obligatorios."}
+        
+        if not isinstance(mapping, dict):
+            return {"status": "error", "message": "El mapeo debe ser un objeto (diccionario)."}
+            
+        return self.import_service.save_mapping_profile(mapping_id, mapping)
 
     # --- HANDLERS DE VENTAS ---
 

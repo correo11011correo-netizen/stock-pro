@@ -265,6 +265,13 @@ class WebAPIHandler(BaseHTTPRequestHandler):
         command = data.get("command")
         params = data.get("params", {})
         
+        # 🚀 FIX: Compatibilidad con parámetros en la raíz del JSON
+        # Si los parámetros vienen en la raíz (fuera de 'params'), los integramos
+        if isinstance(data, dict):
+            for key, value in data.items():
+                if key not in ["command", "token", "params"] and key not in params:
+                    params[key] = value
+        
         # 🔍 DEBUG DETALLADO
         logging.debug(f"📦 DATA RECIBIDA: command='{command}' | params={params}")
 
