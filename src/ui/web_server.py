@@ -62,6 +62,29 @@ class WebAPIHandler(BaseHTTPRequestHandler):
             return None, {"status": "error", "message": "Acceso denegado. Se requiere rol MASTER."}
         return user_session, None
 
+    def _serve_static_file(self, relative_path, default_mime='text/html'):
+        """Robustly serves a static file from the UI directory."""
+        try:
+            ui_dir = Path(__file__).resolve().parent
+            file_path = ui_dir / relative_path
+            
+            if not file_path.exists() or not file_path.is_file():
+                logging.warning(f"❌ [StaticServe] File not found: {file_path}")
+                return False
+
+            mime_type, _ = mimetypes.guess_type(str(file_path))
+            content = file_path.read_bytes()
+            
+            self.send_response(200)
+            self.send_header('Content-type', mime_type or default_mime)
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+            return True
+        except Exception as e:
+            logging.error(f"💥 [StaticServe] Error serving {relative_path}: {e}")
+            return False
+
     def do_GET(self):
         logging.info(f"📩 GET Request: {self.path}")
         ui_dir = os.path.dirname(os.path.abspath(__file__))
@@ -93,9 +116,16 @@ class WebAPIHandler(BaseHTTPRequestHandler):
 
         # --- APP WEB PWA (Nueva versión híbrida) ---
         if clean_path.startswith('/appweb'):
-
-
-        # --- ADMIN API (GET endpoints, all require MASTER role) ---
+            rel_path = clean_path.replace('/appweb/', '').lstrip('/')
+            if not rel_path:
+                rel_path = "appweb/index.html"
+            elif not rel_path.endswith('.html') and not os.path.splitext(rel_path)[1]:
+                rel_path = os.path.join("appweb", rel_path + "/index.html")
+            else:
+                rel_path = os.path.join("appweb", rel_path)
+            
+            if self._serve_static_file(rel_path):
+                return
 
         # --- ADMIN API (GET endpoints, all require MASTER role) ---
         from urllib.parse import urlparse, parse_qs
@@ -534,7 +564,7 @@ class WebAPIHandler(BaseHTTPRequestHandler):
             return self._json_response({"status": "error", "message": str(e)}, 500)
 
 class WebServer:
-    def __init__(self, dispatcher: CommandDispatcher, auth_service, port=8888):
+    def __init__(self, dispatcher: CommandDispatcher, auth_service, port=8889):
         self.dispatcher = dispatcher
         self.auth_service = auth_service
         self.port = port
