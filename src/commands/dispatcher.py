@@ -619,6 +619,38 @@ class CommandDispatcher:
         self.logger.info("ADMIN_ACTION: Consulta global de usuarios ejecutada.")
         return self.auth_service.list_all_users_admin()
 
+    def _handle_subscription_plans(self, params):
+        """
+        Retorna los planes de suscripción disponibles para que el usuario pueda elegir uno.
+        """
+        plans = [
+            {
+                "id": "FREE",
+                "name": "Plan Gratuito",
+                "price": 0,
+                "cycle": "Mensual",
+                "features": ["Gestión básica de Stock", "Hasta 3 usuarios", "Soporte por Email"],
+                "description": "Ideal para pequeños emprendimientos que comienzan."
+            },
+            {
+                "id": "PRO",
+                "name": "Plan Profesional",
+                "price": 49.99,
+                "cycle": "Mensual",
+                "features": ["Todo lo de FREE", "Reportes Avanzados", "Usuarios Ilimitados", "Sincronización Móvil"],
+                "description": "Diseñado para negocios en crecimiento que necesitan control total."
+            },
+            {
+                "id": "ENTERPRISE",
+                "name": "Plan Enterprise",
+                "price": "Consultar",
+                "cycle": "Anual",
+                "features": ["Todo lo de PRO", "Soporte 24/7 Prioritario", "API de Integración", "Consultoría de Implementación"],
+                "description": "Soluciones a medida para grandes corporaciones."
+            }
+        ]
+        return {"status": "success", "data": plans}
+
     def _handle_sys_admin_setup(self, params):
         """Handler para la configuración inicial del Master Admin."""
         if not self.auth_service:

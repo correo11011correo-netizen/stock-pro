@@ -148,6 +148,9 @@ const app = {
     setupUI() {
         document.getElementById('user-role-badge').textContent = this.user.role;
         document.getElementById('user-name-display').textContent = this.user.username;
+        if (document.getElementById('current-plan-display')) {
+            document.getElementById('current-plan-display').textContent = this.user.plan || 'FREE';
+        }
 
         // Lógica de RAM: Solo habilitar Admin si es Dueño o Admin
         if (this.user.role === 'OWNER' || this.user.role === 'admin' || this.user.role === 'MASTER') {
@@ -164,10 +167,70 @@ const app = {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        
+        if (tab === 'subs') {
+            this.loadPlans();
+        }
+        
         event.currentTarget.classList.add('active');
 
         if (tab === 'ventas') {
             this.loadBestsellers();
+        }
+    },
+
+    async loadPlans() {
+        try {
+            const res = await fetch('/api/config', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': sessionStorage.getItem('admin_token') || ''
+                },
+                body: JSON.stringify({ command: 'sys.subscription.plans' })
+            });
+            const data = await res.json();
+
+            if (data.payload && data.payload.status === 'success') {
+                const plans = data.payload.data;
+                const container = document.getElementById('plans-container');
+                container.innerHTML = plans.map(p => `
+                    <div class="plan-card ${p.id === this.user.plan ? 'active' : ''}">
+                        <h4>${p.name}</h4>
+                        <p class="price">$${p.price}</p>
+                        <ul class="features">
+                            ${p.features.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                        <button onclick="app.upgradePlan('${p.id}')" ${p.id === this.user.plan ? 'disabled' : ''}>
+                            ${p.id === this.user.plan ? 'Plan Actual' : 'Seleccionar'}
+                        </button>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.error("Error loading plans:", e);
+        }
+    },
+
+    async upgradePlan(planId) {
+        if (!confirm(`¿Deseas cambiar tu plan a ${planId}? Esto generará un link de pago.`)) return;
+
+        try {
+            const res = await fetch('/api/config', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': sessionStorage.getItem('admin_token') || ''
+                },
+                body: JSON.stringify({ 
+                    command: 'sys.subscription.update', 
+                    params: { tenant_id: this.user.tenant_id, plan: planId } 
+                })
+            });
+            const data = await res.json();
+            alert("Solicitud enviada. Por favor, revisa el Payment Gateway para completar el pago y activar tu plan.");
+        } catch (e) {
+            alert("Error al solicitar el cambio de plan.");
         }
     },
 

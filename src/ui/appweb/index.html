@@ -40,30 +40,42 @@
                     <button onclick="app.logout()" class="btn-logout" style="background:none; border:1px solid #334155; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Salir</button>
                 </div>
             </header>
+<nav class="tab-container">
+    <button class="tab-btn active" onclick="app.showTab('stock')">📦 Stock</button>
+    <button class="tab-btn" onclick="app.showTab('ventas')">💰 Ventas</button>
+    <button class="tab-btn" onclick="app.showTab('subs')">💎 Plan</button>
+    <button class="tab-btn hidden" id="btn-admin-tab" onclick="app.showTab('admin')">⚙️ Admin</button>
+    <button class="tab-btn" onclick="app.syncNow()">🔄 Sync</button>
+</nav>
 
-            <nav class="tab-container">
-                <button class="tab-btn active" onclick="app.showTab('stock')">📦 Stock</button>
-                <button class="tab-btn" onclick="app.showTab('ventas')">💰 Ventas</button>
-                <button class="tab-btn hidden" id="btn-admin-tab" onclick="app.showTab('admin')">⚙️ Admin</button>
-                <button class="tab-btn" onclick="app.syncNow()">🔄 Sync</button>
-            </nav>
+<main id="main-content">
+    <!-- Tab Stock -->
+    <div id="tab-stock" class="tab-content">
+        <div class="search-bar">
+            <input type="text" id="stock-search" placeholder="Buscar producto..." oninput="app.searchStock()">
+            <button onclick="app.searchStock()">🔍</button>
+        </div>
+        <div id="stock-list" class="list"></div>
+    </div>
 
-            <main id="main-content">
-                <!-- Tab Stock -->
-                <div id="tab-stock" class="tab-content">
-                    <div class="search-bar">
-                        <input type="text" id="stock-search" placeholder="Buscar producto..." oninput="app.searchStock()">
-                        <button onclick="app.searchStock()">🔍</button>
-                    </div>
-                    <div id="stock-list" class="list"></div>
-                </div>
+    <!-- Tab Ventas -->
+    <div id="tab-ventas" class="tab-content hidden">
+        <!-- ... existing ventas content ... -->
+    </div>
 
-                <!-- Tab Ventas -->
-                <div id="tab-ventas" class="tab-content hidden">
+    <!-- Tab Subscription -->
+    <div id="tab-subs" class="tab-content hidden">
+        <div class="subscription-panel">
+            <h3>Tu Plan Actual: <span id="current-plan-display">FREE</span></h3>
+            <div id="plans-container" class="plans-grid">
+                <!-- Plans will be loaded here via JS -->
+            </div>
+        </div>
+    </div>
 
-                    <!-- Buscador con autocompletado -->
-                    <div class="ventas-search-section">
-                        <div class="search-bar" style="position:relative;">
+    <!-- Tab Admin (Carga Dinámica/Online) -->
+    <div id="tab-admin" class="tab-content hidden">
+
                             <input
                                 type="text"
                                 id="ventas-search"
