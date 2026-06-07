@@ -589,7 +589,11 @@ function renderPagination(containerId, currentPage, totalPages, onPageChange) {
   el.innerHTML = `${prev}<span class="text-slate-400 text-xs mx-4">Página ${currentPage}/${totalPages}</span>${next}`;
 }
 
-function showSetupModal() { showSection('setup'); }
+function showSetupModal() { 
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  showSection('setup'); 
+}
 
 async function handleSetupSubmit(e) {
   e.preventDefault();
