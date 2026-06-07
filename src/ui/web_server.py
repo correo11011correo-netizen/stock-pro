@@ -256,6 +256,12 @@ class WebAPIHandler(BaseHTTPRequestHandler):
                 logging.exception(f"JSONDecodeError en {post_path}: {e}")
                 return self._json_response({"status": "error", "message": "JSON inválido"}, 400)
 
+        # Si no hay token en los headers, intentar extraerlo del cuerpo JSON
+        if not token and isinstance(data, dict):
+            token = data.get('token', '')
+            if token:
+                logging.debug(f"🔑 Token extraído del cuerpo JSON: {token[:20]}...")
+
         command = data.get("command")
         params = data.get("params", {})
         
@@ -341,7 +347,7 @@ class WebAPIHandler(BaseHTTPRequestHandler):
                 
                 if not username or not password:
                     logging.warning(f"❌ [LOGIN] No se encontraron credenciales en el payload: {all_data}")
-                    return self._json_response({"status": "error", "message": "Usuario y contraseña requeridos"}, 400)
+                    return self._json_response({"status": "error", "message": f"Usuario y contraseña requeridos. Recibido: {all_data}"}, 400)
                 
                 result = self.dispatcher.execute("auth.login", {"username": username, "password": password})
                 
