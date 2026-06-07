@@ -535,18 +535,200 @@ const app = {
     },
 
     // ─────────────────────────────────────────────────────────────
-    // IMPORT MANAGEMENT
+    // IMPORT MANAGEMENT - 🆕 SISTEMA ASISTIDO
     // ─────────────────────────────────────────────────────────────
     async handleFileUpload(input) {
-        Logger.log('IMPORT', '📁 Archivo seleccionado');
+        const file = input.files[0];
+        if (!file) return;
+
+        Logger.log('IMPORT', `📁 Archivo seleccionado: ${file.name}`);
+        const logDiv = document.getElementById('import-log');
+        const btnPreview = document.getElementById('btn-run-import');
+        const statusDiv = document.getElementById('import-status');
+        
+        logDiv.innerHTML = `Cargando archivo ${file.name}...`;
+        statusDiv.textContent = 'Archivo cargado';
+        statusDiv.style.color = 'var(--primary)';
+        btnPreview.disabled = false;
+
+        // En una implementación real, aquí subiríamos el archivo al servidor.
+        // Para este prototipo, asumimos que el archivo está accesible en el servidor
+        // o que el servidor maneja la subida mediante un endpoint específico.
+        // Simularemos la ruta basada en el nombre del archivo para el ejemplo.
+        this.state.currentImportFile = `data/samples/${file.name}`; 
+        
+        Logger.success('IMPORT', 'Archivo listo para examinar');
     },
 
     async runImportPreview() {
-        Logger.log('IMPORT', '🔍 Ejecutando preview de importación');
+        const filePath = this.state.currentImportFile;
+        const mappingId = document.getElementById('import-mapping')?.value.trim();
+        
+        if (!filePath) {
+            Toast.error('Primero selecciona un archivo');
+            return;
+        }
+
+        Logger.log('IMPORT', `🔍 Solicitando previsualización: ${filePath}`);
+        const logDiv = document.getElementById('import-log');
+        logDiv.innerHTML += `<br>Solicitando previsualización...`;
+        
+        const res = await this.apiCall('stock.import.preview', { 
+            file_path: filePath,
+            mapping_id: mappingId || null
+        });
+
+        if (res.status === 'needs_mapping') {
+            Logger.warn('IMPORT', 'Mapeo requerido por el usuario');
+            logDiv.innerHTML += `<br>⚠️ Mapeo manual requerido.`;
+            this.renderMappingTable(res.headers);
+        } else if (res.status === 'success') {
+            Logger.success('IMPORT', 'Previsualización generada');
+            logDiv.innerHTML += `<br>✅ Datos mapeados correctamente.`;
+            this.renderImportPreview(res.data, res.mapping_used);
+        } else {
+            Logger.error('IMPORT', `Error: ${res.message}`);
+            logDiv.innerHTML += `<br>❌ Error: ${res.message}`;
+            Toast.error(res.message);
+        }
+    },
+
+    renderMappingTable(headers) {
+        const container = document.getElementById('import-mapping-container');
+        const tbody = document.getElementById('mapping-table-body');
+        const previewContainer = document.getElementById('import-preview-container');
+        
+        container.classList.remove('hidden');
+        previewContainer.classList.add('hidden');
+        tbody.innerHTML = '';
+
+        const systemFields = [
+            { id: 'codigo', label: 'Código / SKU' },
+            { id: 'nombre', label: 'Nombre / Descripción' },
+            { id: 'precio', label: 'Precio de Venta' },
+            { id: 'cantidad', label: 'Cantidad / Stock' },
+            { id: 'categoria', label: 'Categoría' },
+            { id: 'es_peso', label: '¿Es pesado? (Kg)' },
+        ];
+
+        headers.forEach(header => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${header}</strong></td>
+                <td>
+                    <select class="input mapping-select" data-column="${header}">
+                        <option value="">-- Ignorar --</option>
+                        ${systemFields.map(f => `<option value="${f.id}">${f.label}</option>`).join('')}
+                    </select>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    },
+
+    async saveImportProfile() {
+        const profileName = document.getElementById('import-profile-name')?.value.trim();
+        if (!profileName) {
+            Toast.error('Por favor, asigna un nombre al perfil');
+            return;
+        }
+
+        const mapping = this.getCurrentMapping();
+        if (Object.keys(mapping).length === 0) {
+            Toast.error('No hay mapeo definido para guardar');
+            return;
+        }
+
+        Logger.log('IMPORT', `💾 Guardando perfil: ${profileName}`);
+        const res = await this.apiCall('stock.import.save_profile', {
+            mapping_id: profileName,
+            mapping: mapping
+        });
+
+        if (res.status === 'success') {
+            Toast.success(`Perfil '${profileName}' guardado`);
+        } else {
+            Toast.error(res.message);
+        }
+    },
+
+    getCurrentMapping() {
+        const mapping = {};
+        document.querySelectorAll('.mapping-select').forEach(select => {
+            if (select.value) {
+                mapping[select.value] = select.getAttribute('data-column');
+            }
+        });
+        return mapping;
+    },
+
+    renderImportPreview(data, mappingUsed) {
+        const container = document.getElementById('import-preview-container');
+        const mappingContainer = document.getElementById('import-mapping-container');
+        const tbody = document.getElementById('import-preview-body');
+        
+        container.classList.remove('hidden');
+        mappingContainer.classList.add('hidden');
+        tbody.innerHTML = '';
+
+        data.forEach(item => {
+            const mapped = item.mapped;
+            const hasError = item.error;
+            
+            const tr = document.createElement('tr');
+            if (hasError) tr.style.color = 'var(--error)';
+            
+            tr.innerHTML = `
+                <td>${item.row}</td>
+                <td><input type="text" class="input edit-field" data-row="${item.row}" data-field="codigo" value="${mapped.codigo || ''}"></td>
+                <td><input type="text" class="input edit-field" data-row="${item.row}" data-field="nombre" value="${mapped.nombre || ''}"></td>
+                <td><input type="number" class="input edit-field" data-row="${item.row}" data-field="precio" value="${mapped.precio || 0}"></td>
+                <td><input type="number" class="input edit-field" data-row="${item.row}" data-field="cantidad" value="${mapped.cantidad || 0}"></td>
+                <td><input type="text" class="input edit-field" data-row="${item.row}" data-field="categoria" value="${mapped.categoria || ''}"></td>
+                <td><input type="checkbox" class="edit-field" data-row="${item.row}" data-field="es_peso" ${mapped.es_peso ? 'checked' : ''}></td>
+            `;
+            tbody.appendChild(tr);
+        });
     },
 
     async commitImport() {
-        Logger.log('IMPORT', '💾 Confirmando importación');
+        const rows = [];
+        const tbody = document.getElementById('import-preview-body');
+        
+        // Recolectar datos editados de la tabla
+        const rowElements = tbody.querySelectorAll('tr');
+        rowElements.forEach(tr => {
+            const rowIdx = tr.querySelector('[data-row]').getAttribute('data-row');
+            const mapped = {};
+            tr.querySelectorAll('.edit-field').forEach(field => {
+                const f = field.getAttribute('data-field');
+                const val = field.type === 'checkbox' ? field.checked : field.value;
+                mapped[f] = val;
+            });
+            rows.push({ row: rowIdx, mapped: mapped });
+        });
+
+        Logger.log('IMPORT', `💾 Confirmando importación de ${rows.length} items`);
+        const res = await this.apiCall('stock.import.commit', { data_list: rows });
+
+        if (res.status === 'success') {
+            Toast.success(res.message);
+            this.cancelImport();
+            this.loadStock();
+        } else {
+            Toast.error(res.message);
+        }
+    },
+
+    cancelImport() {
+        document.getElementById('import-preview-container').classList.add('hidden');
+        document.getElementById('import-mapping-container').classList.add('hidden');
+        document.getElementById('import-file-input').value = '';
+        document.getElementById('btn-run-import').disabled = true;
+        document.getElementById('import-status').textContent = '';
+        document.getElementById('import-log').innerHTML = 'Esperando selección de archivo...';
+        this.state.currentImportFile = null;
+        Logger.log('IMPORT', 'Importación cancelada');
     },
 
     // ─────────────────────────────────────────────────────────────

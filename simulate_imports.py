@@ -2,7 +2,7 @@ import requests
 import json
 import time
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8888"
 SAMPLES = [
     {
         "file": "data/samples/shopify_export.csv",
@@ -34,23 +34,41 @@ SAMPLES = [
 def run_simulation():
     print("🚀 Starting Import Simulation Workflow...")
     
+    # 0. Login to get a token
+    print("🔐 Step 0: Logging in...")
+    login_res = requests.post(BASE_URL, json={
+        "command": "auth.login",
+        "user": "asd",
+        "pass": "asd"
+    })
+    token = login_res.json().get("payload", {}).get("token")
+    if not token:
+        print("❌ Login failed. Cannot proceed.")
+        return
+    print(f"Token acquired: {token[:10]}...")
+
     for sample in SAMPLES:
-        print(f"
---- Testing File: {sample['file']} ---")
+        print(f"\n--- Testing File: {sample['file']} ---")
         
         # 1. Preview with auto-detect
         print("🔍 Step 1: Previewing with auto-detect...")
-        res = requests.post(BASE_URL, json={"command": "stock.import.preview", "file_path": sample['file']})
-        print(f"Result: {res.json()['status']}")
+        res = requests.post(BASE_URL, json={
+            "command": "stock.import.preview", 
+            "file_path": sample['file'],
+            "token": token
+        })
+        payload = res.json().get("payload", {})
+        print(f"Result: {payload.get('status', 'error')}")
         
         # 2. Preview with custom mapping
         print("🎯 Step 2: Previewing with custom mapping...")
         res = requests.post(BASE_URL, json={
             "command": "stock.import.preview", 
             "file_path": sample['file'], 
-            "custom_mapping": sample['mapping']
+            "custom_mapping": sample['mapping'],
+            "token": token
         })
-        preview_data = res.json().get("data", [])
+        preview_data = res.json().get("payload", {}).get("data", [])
         print(f"Mapped {len(preview_data)} items.")
         
         # 3. Save Profile
@@ -58,20 +76,23 @@ def run_simulation():
         res = requests.post(BASE_URL, json={
             "command": "stock.import.save_profile", 
             "mapping_id": sample['profile'], 
-            "mapping": sample['mapping']
+            "mapping": sample['mapping'],
+            "token": token
         })
-        print(f"Saved: {res.json()['status']}")
+        payload = res.json().get("payload", {})
+        print(f"Saved: {payload.get('status', 'error')}")
         
         # 4. Commit
         print("✅ Step 4: Committing to DB...")
         res = requests.post(BASE_URL, json={
             "command": "stock.import.commit", 
-            "data_list": preview_data
+            "data_list": preview_data,
+            "token": token
         })
-        print(f"Commit result: {res.json()['message']}")
+        payload = res.json().get("payload", {})
+        print(f"Commit result: {payload.get('message', 'Error')}")
         
-    print("
-✨ All simulations completed!")
+    print("\n✨ All simulations completed!")
 
 if __name__ == "__main__":
     # Wait for server to start

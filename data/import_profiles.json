@@ -8,5 +8,40 @@
         "precio": "Precio Venta",
         "cantidad": "Existencias",
         "categoria": "Categoría"
+    },
+    "Shopify": {
+        "codigo": "Handle",
+        "nombre": "Title",
+        "precio": "Variant Price",
+        "cantidad": "Variant Inventory Qty",
+        "categoria": "Product Type"
+    },
+    "Corporate": {
+        "codigo": "Código Interno",
+        "nombre": "Descripción Artículo",
+        "precio": "Precio Venta Unitario",
+        "cantidad": "Existencias Actuales",
+        "categoria": "Categoría Grupo"
+    },
+    "Legacy": {
+        "codigo": "sku",
+        "nombre": "item",
+        "precio": "cost",
+        "cantidad": "qty",
+        "categoria": "dept"
+    },
+    "API_Export": {
+        "codigo": "id",
+        "nombre": "name",
+        "precio": "price",
+        "cantidad": "stock",
+        "categoria": "category"
+    },
+    "Messy": {
+        "codigo": "ART_ID",
+        "nombre": "LABEL",
+        "precio": "VALUE",
+        "cantidad": "AMOUNT",
+        "categoria": "TAG"
     }
 }

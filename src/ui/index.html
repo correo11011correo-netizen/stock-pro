@@ -575,27 +575,57 @@
                     <div class="card">
                         <h3>⚙️ Configuración de Importación</h3>
                         <div class="form-group">
-                            <label>Seleccionar Archivo CSV</label>
-                            <input type="file" id="import-file-input" class="input" accept=".csv" onchange="app.handleFileUpload(this)">
+                            <label>Seleccionar Archivo (CSV, XLSX, JSON, TXT)</label>
+                            <input type="file" id="import-file-input" class="input" accept=".csv,.xlsx,.xls,.json,.txt" onchange="app.handleFileUpload(this)">
                         </div>
                         <div class="form-group">
-                            <label>ID del Mapeo de Columnas</label>
-                            <input type="text" id="import-mapping" class="input" placeholder="ej: default_csv">
+                            <label>Cargar Perfil Guardado</label>
+                            <input type="text" id="import-mapping" class="input" placeholder="ej: Shopify, Corporate...">
                         </div>
-                        <div id="import-status" style="margin-bottom: 15px; font-size: 0.85rem; font-weight: bold;"></div>
-                        <button id="btn-run-import" class="btn btn-primary" onclick="app.runImportPreview()" disabled>🔍 Examinar Archivo</button>
+                        <div id="import-status" style="margin-bottom: 15px; font-size: 0.85rem; font-weight: bold; text-align: center;"></div>
+                        <button id="btn-run-import" class="btn btn-primary" style="width: 100%" onclick="app.runImportPreview()" disabled>🔍 Examinar Archivo</button>
                     </div>
                     <div class="card">
                         <h3>📝 Log de Proceso</h3>
-                        <div id="import-log" style="height: 200px; overflow-y: auto; background: rgba(30, 41, 59, 0.5); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem;">
+                        <div id="import-log" style="height: 200px; overflow-y: auto; background: rgba(15, 23, 42, 0.5); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
                             Esperando selección de archivo...
                         </div>
                     </div>
                 </div>
-                <div id="import-preview-container" class="card hidden" style="margin-top: 20px;">
-                    <h3>📋 Previsualización y Edición</h3>
+
+                <!-- 🆕 SECCIÓN DE MAPEADO ASISTIDO (Hidden by default) -->
+                <div id="import-mapping-container" class="card hidden" style="margin-top: 20px; animation: fadeIn 0.3s ease;">
+                    <h3 style="color: var(--warning);">⚠️ Asignación de Columnas Necesaria</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
+                        No pudimos detectar automáticamente todas las columnas. Por favor, indica a qué campo de nuestro sistema corresponde cada columna de tu archivo.
+                    </p>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table" id="mapping-table">
+                            <thead>
+                                <tr>
+                                    <th>Columna de tu Archivo</th>
+                                    <th>Campo del Sistema</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mapping-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                        <button class="btn btn-primary" onclick="app.runImportPreview()">🔄 Actualizar Previsualización</button>
+                    </div>
+                </div>
+
+                <!-- 🆕 SECCIÓN DE PERFIL Y PREVISUALIZACIÓN -->
+                <div id="import-preview-container" class="card hidden" style="margin-top: 20px; animation: fadeIn 0.3s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">📋 Previsualización de Datos</h3>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="import-profile-name" class="input" style="width: 150px;" placeholder="Nombre del Perfil">
+                            <button class="btn btn-secondary" onclick="app.saveImportProfile()">💾 Guardar Perfil</button>
+                        </div>
+                    </div>
                     <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
-                        Revisa los datos importados. Puedes editar cualquier campo antes de confirmar la carga al stock.
+                        Revisa los datos mapeados. Los campos en rojo indican errores de validación. Puedes editar los valores directamente en la tabla.
                     </p>
                     <div style="overflow-x: auto;">
                         <table class="data-table">
@@ -614,8 +644,8 @@
                         </table>
                     </div>
                     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                        <button class="btn btn-secondary" onclick="document.getElementById('import-preview-container').classList.add('hidden')">Cancelar</button>
-                        <button class="btn btn-primary" onclick="app.commitImport()">💾 Guardar en Stock</button>
+                        <button class="btn btn-secondary" onclick="app.cancelImport()">Cancelar</button>
+                        <button class="btn btn-primary" onclick="app.commitImport()">🚀 Confirmar e Importar al Stock</button>
                     </div>
                 </div>
             </div>

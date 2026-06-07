@@ -21,8 +21,10 @@ class CommandDispatcher:
         # Import Service Initialization
         from ..core.import_service import ImportService
         from ..core.sentinel_service import SentinelService
+        from ..core.sync_service import SyncService
         self.import_service = ImportService(stock_service)
         self.sentinel_service = SentinelService(db)
+        self.sync_service = SyncService(stock_service)
         
         self.logger = logging.getLogger("CommandDispatcher")
         
@@ -88,6 +90,8 @@ class CommandDispatcher:
             "sys.sentinel.update": (self._handle_sentinel_update, "admin", False, "perm_sys_admin"),
             "sys.sentinel.rollback": (self._handle_sentinel_rollback, "admin", False, "perm_sys_admin"),
             "sys.admin.users_list": (self._handle_admin_users_list, "admin", False, "perm_sys_admin"),
+            "sync.push": (self._handle_sync_push, "gratis", False, None),
+            "sync.pull": (self._handle_sync_pull, "gratis", False, None),
         }
 
     def execute(self, command_str: str, params: Dict[str, Any] = None, current_user_role: str = "empleado", is_pro: bool = False, user_permissions: set = None, user_id: str = None) -> Dict[str, Any]:

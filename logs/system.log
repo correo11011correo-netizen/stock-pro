@@ -205,3 +205,210 @@ json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:
 2026-06-07 06:15:15,968 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
 2026-06-07 06:15:18,151 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
 2026-06-07 06:15:18,162 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:41:33,414 [INFO] root: Logging system initialized.
+2026-06-07 06:41:34,882 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:41:37,751 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:41:39,198 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:50:01,058 [INFO] root: Logging system initialized.
+2026-06-07 06:50:02,521 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:50:05,388 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:50:06,873 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:52:03,507 [INFO] root: RAW BODY RECEIVED: {command:auth.login, username:asd, password:123}
+2026-06-07 06:52:03,508 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 254, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 06:52:03,513 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:52:05,858 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/shopify_export.csv"}
+2026-06-07 06:52:05,896 [INFO] root: "POST / HTTP/1.1" 401 -
+2026-06-07 06:52:14,475 [INFO] root: RAW BODY RECEIVED: {\
+2026-06-07 06:52:14,476 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 254, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 06:52:14,481 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:52:23,274 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/shopify_export.csv"}
+2026-06-07 06:52:23,312 [INFO] root: "POST / HTTP/1.1" 401 -
+2026-06-07 06:53:06,574 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 06:53:06,607 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 06:53:08,770 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 06:53:08,780 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:09,798 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/shopify_export.csv", "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:11,290 [INFO] root: Creando nuevo dispatcher para tenant tenant_ef67fe6a (Schema: schema_ef67fe6a)
+2026-06-07 06:53:12,728 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: schema_ef67fe6a
+2026-06-07 06:53:15,560 [INFO] DatabaseManager: PostgreSQL DB initialized for schema: schema_ef67fe6a
+2026-06-07 06:53:17,235 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:53:17,243 [INFO] ImportService: Auto-detección completada: {'nombre': 'Title', 'precio': 'Variant Price', 'cantidad': 'Variant Inventory Qty', 'categoria': 'Product Type'}
+2026-06-07 06:53:17,244 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:18,261 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/shopify_export.csv", "custom_mapping": {"codigo": "Handle", "nombre": "Title", "precio": "Variant Price", "cantidad": "Variant Inventory Qty", "categoria": "Product Type"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:20,482 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:53:20,485 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:21,512 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.save_profile", "mapping_id": "Shopify", "mapping": {"codigo": "Handle", "nombre": "Title", "precio": "Variant Price", "cantidad": "Variant Inventory Qty", "categoria": "Product Type"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:23,725 [INFO] CommandDispatcher: Executing command: stock.import.save_profile | User Role: OWNER
+2026-06-07 06:53:23,726 [INFO] ImportService: Perfil de mapeo 'Shopify' guardado exitosamente.
+2026-06-07 06:53:23,727 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:24,763 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.commit", "data_list": [{"row": 1, "original": {"Handle": "prod-1", "Title": "iPhone 13", "Variant Price": 999.99, "Variant Inventory Qty": 10, "Product Type": "Phones"}, "mapped": {"codigo": "prod-1", "nombre": "iPhone 13", "precio": 999.99, "cantidad": 10.0, "categoria": "Phones"}}, {"row": 2, "original": {"Handle": "prod-2", "Title": "Samsung S22", "Variant Price": 850.0, "Variant Inventory Qty": 15, "Product Type": "Phones"}, "mapped": {"codigo": "prod-2", "nombre": "Samsung S22", "precio": 850.0, "cantidad": 15.0, "categoria": "Phones"}}], "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:26,974 [INFO] CommandDispatcher: Executing command: stock.import.commit | User Role: OWNER
+2026-06-07 06:53:27,926 [INFO] StockService: Producto procesado: iPhone 13 (prod-1)
+2026-06-07 06:53:28,874 [INFO] StockService: Producto procesado: Samsung S22 (prod-2)
+2026-06-07 06:53:28,875 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:29,917 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/corp_stock.xlsx", "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:32,151 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:53:32,447 [INFO] ImportService: Auto-detección completada: {'nombre': 'Descripción Artículo', 'precio': 'Precio Venta Unitario', 'cantidad': 'Existencias Actuales', 'categoria': 'Categoría Grupo'}
+2026-06-07 06:53:32,448 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:33,509 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/corp_stock.xlsx", "custom_mapping": {"codigo": "C\u00f3digo Interno", "nombre": "Descripci\u00f3n Art\u00edculo", "precio": "Precio Venta Unitario", "cantidad": "Existencias Actuales", "categoria": "Categor\u00eda Grupo"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:35,736 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:53:35,743 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:36,765 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.save_profile", "mapping_id": "Corporate", "mapping": {"codigo": "C\u00f3digo Interno", "nombre": "Descripci\u00f3n Art\u00edculo", "precio": "Precio Venta Unitario", "cantidad": "Existencias Actuales", "categoria": "Categor\u00eda Grupo"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:38,987 [INFO] CommandDispatcher: Executing command: stock.import.save_profile | User Role: OWNER
+2026-06-07 06:53:39,003 [INFO] ImportService: Perfil de mapeo 'Corporate' guardado exitosamente.
+2026-06-07 06:53:39,004 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:40,024 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.commit", "data_list": [{"row": 1, "original": {"C\u00f3digo Interno": "C001", "Descripci\u00f3n Art\u00edculo": "Silla Oficina", "Precio Venta Unitario": 120.5, "Existencias Actuales": 5, "Categor\u00eda Grupo": "Muebles"}, "mapped": {"codigo": "C001", "nombre": "Silla Oficina", "precio": 120.5, "cantidad": 5.0, "categoria": "Muebles"}}, {"row": 2, "original": {"C\u00f3digo Interno": "C002", "Descripci\u00f3n Art\u00edculo": "Mesa Director", "Precio Venta Unitario": 450.0, "Existencias Actuales": 2, "Categor\u00eda Grupo": "Muebles"}, "mapped": {"codigo": "C002", "nombre": "Mesa Director", "precio": 450.0, "cantidad": 2.0, "categoria": "Muebles"}}], "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:42,239 [INFO] CommandDispatcher: Executing command: stock.import.commit | User Role: OWNER
+2026-06-07 06:53:43,189 [INFO] StockService: Producto procesado: Silla Oficina (C001)
+2026-06-07 06:53:44,132 [INFO] StockService: Producto procesado: Mesa Director (C002)
+2026-06-07 06:53:44,133 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:45,156 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/legacy_system.txt", "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:47,370 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:53:47,374 [INFO] ImportService: Auto-detección completada: {'codigo': 'sku', 'nombre': 'item', 'precio': 'cost', 'cantidad': 'qty', 'categoria': 'dept'}
+2026-06-07 06:53:47,375 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:48,389 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/legacy_system.txt", "custom_mapping": {"codigo": "sku", "nombre": "item", "precio": "cost", "cantidad": "qty", "categoria": "dept"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:50,606 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:53:50,610 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:51,626 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.save_profile", "mapping_id": "Legacy", "mapping": {"codigo": "sku", "nombre": "item", "precio": "cost", "cantidad": "qty", "categoria": "dept"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:53,834 [INFO] CommandDispatcher: Executing command: stock.import.save_profile | User Role: OWNER
+2026-06-07 06:53:53,861 [INFO] ImportService: Perfil de mapeo 'Legacy' guardado exitosamente.
+2026-06-07 06:53:53,862 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:54,876 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.commit", "data_list": [{"row": 1, "original": {"sku": "L001", "item": "Cable HDMI", "cost": 5.99, "qty": 100, "dept": "Accesorios"}, "mapped": {"codigo": "L001", "nombre": "Cable HDMI", "precio": 5.99, "cantidad": 100.0, "categoria": "Accesorios"}}, {"row": 2, "original": {"sku": "L002", "item": "Adaptador USB", "cost": 12.5, "qty": 50, "dept": "Accesorios"}, "mapped": {"codigo": "L002", "nombre": "Adaptador USB", "precio": 12.5, "cantidad": 50.0, "categoria": "Accesorios"}}], "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:53:57,083 [INFO] CommandDispatcher: Executing command: stock.import.commit | User Role: OWNER
+2026-06-07 06:53:58,031 [INFO] StockService: Producto procesado: Cable HDMI (L001)
+2026-06-07 06:53:58,975 [INFO] StockService: Producto procesado: Adaptador USB (L002)
+2026-06-07 06:53:58,976 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:53:59,993 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/api_export.json", "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:02,200 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:54:02,201 [INFO] ImportService: Auto-detección completada: {'codigo': 'id', 'nombre': 'name', 'precio': 'price', 'cantidad': 'stock', 'categoria': 'category'}
+2026-06-07 06:54:02,202 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:03,234 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/api_export.json", "custom_mapping": {"codigo": "id", "nombre": "name", "precio": "price", "cantidad": "stock", "categoria": "category"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:05,455 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:54:05,456 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:06,470 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.save_profile", "mapping_id": "API_Export", "mapping": {"codigo": "id", "nombre": "name", "precio": "price", "cantidad": "stock", "categoria": "category"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:08,682 [INFO] CommandDispatcher: Executing command: stock.import.save_profile | User Role: OWNER
+2026-06-07 06:54:08,699 [INFO] ImportService: Perfil de mapeo 'API_Export' guardado exitosamente.
+2026-06-07 06:54:08,700 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:09,734 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.commit", "data_list": [{"row": 1, "original": {"id": "api-1", "name": "Teclado Mec\u00e1nico", "price": 89.9, "stock": 20, "category": "Perif\u00e9ricos"}, "mapped": {"codigo": "api-1", "nombre": "Teclado Mec\u00e1nico", "precio": 89.9, "cantidad": 20.0, "categoria": "Perif\u00e9ricos"}}, {"row": 2, "original": {"id": "api-2", "name": "Mouse Gamer", "price": 45.0, "stock": 30, "category": "Perif\u00e9ricos"}, "mapped": {"codigo": "api-2", "nombre": "Mouse Gamer", "precio": 45.0, "cantidad": 30.0, "categoria": "Perif\u00e9ricos"}}], "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:11,943 [INFO] CommandDispatcher: Executing command: stock.import.commit | User Role: OWNER
+2026-06-07 06:54:12,890 [INFO] StockService: Producto procesado: Teclado Mecánico (api-1)
+2026-06-07 06:54:13,844 [INFO] StockService: Producto procesado: Mouse Gamer (api-2)
+2026-06-07 06:54:13,845 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:14,860 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/messy_data.csv", "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:17,055 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:54:17,059 [INFO] ImportService: Auto-detección completada: {'codigo': 'ART_ID', 'nombre': 'LABEL', 'cantidad': 'AMOUNT'}
+2026-06-07 06:54:17,060 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:18,074 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.preview", "file_path": "data/samples/messy_data.csv", "custom_mapping": {"codigo": "ART_ID", "nombre": "LABEL", "precio": "VALUE", "cantidad": "AMOUNT", "categoria": "TAG"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:20,286 [INFO] CommandDispatcher: Executing command: stock.import.preview | User Role: OWNER
+2026-06-07 06:54:20,289 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:21,310 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.save_profile", "mapping_id": "Messy", "mapping": {"codigo": "ART_ID", "nombre": "LABEL", "precio": "VALUE", "cantidad": "AMOUNT", "categoria": "TAG"}, "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:23,507 [INFO] CommandDispatcher: Executing command: stock.import.save_profile | User Role: OWNER
+2026-06-07 06:54:23,526 [INFO] ImportService: Perfil de mapeo 'Messy' guardado exitosamente.
+2026-06-07 06:54:23,527 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:24,559 [INFO] root: RAW BODY RECEIVED: {"command": "stock.import.commit", "data_list": [{"row": 1, "original": {"ART_ID": "M001", "LABEL": "Monitor 24", "VALUE": "$200,00", "AMOUNT": 8, "TAG": "Hardware"}, "mapped": {"codigo": "M001", "nombre": "Monitor 24", "precio": 20000.0, "cantidad": 8.0, "categoria": "Hardware"}}, {"row": 2, "original": {"ART_ID": "M002", "LABEL": "Monitor 27", "VALUE": "$300,00", "AMOUNT": 4, "TAG": "Hardware"}, "mapped": {"codigo": "M002", "nombre": "Monitor 27", "precio": 30000.0, "cantidad": 4.0, "categoria": "Hardware"}}], "token": "247f1ccd-5a61-4ff4-8793-c13931dfdea5"}
+2026-06-07 06:54:26,782 [INFO] CommandDispatcher: Executing command: stock.import.commit | User Role: OWNER
+2026-06-07 06:54:27,737 [INFO] StockService: Producto procesado: Monitor 24 (M001)
+2026-06-07 06:54:28,684 [INFO] StockService: Producto procesado: Monitor 27 (M002)
+2026-06-07 06:54:28,684 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:44,302 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 06:54:44,335 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 06:54:46,485 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 06:54:46,495 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:47,515 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "26bafba4-a11a-4883-ab91-0ee9fe0cbc80", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 06:54:49,747 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 06:54:50,695 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 06:54:50,696 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:51,708 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "26bafba4-a11a-4883-ab91-0ee9fe0cbc80", "filter": "Prueba"}
+2026-06-07 06:54:53,919 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 06:54:54,867 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:54:55,884 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 06:54:56,607 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 06:55:37,098 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 06:55:37,127 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 06:55:39,271 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 06:55:39,280 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:55:40,295 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "34a92409-d83d-46f6-8fbc-eb0c610be90e", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 06:55:42,506 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 06:55:43,459 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 06:55:43,460 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:55:44,473 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "34a92409-d83d-46f6-8fbc-eb0c610be90e", "filter": "Prueba"}
+2026-06-07 06:55:46,687 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 06:55:47,643 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:55:48,669 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 06:55:49,398 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 06:58:33,136 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 06:58:33,179 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 06:58:35,332 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 06:58:35,342 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:58:36,359 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "cd3b3ecb-4195-4700-aefd-82b42dd0a9c7", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 06:58:38,564 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 06:58:39,512 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 06:58:39,512 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:58:40,526 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "cd3b3ecb-4195-4700-aefd-82b42dd0a9c7", "filter": "Prueba"}
+2026-06-07 06:58:42,738 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 06:58:43,689 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:58:44,708 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 06:58:45,433 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 06:59:10,007 [INFO] root: Logging system initialized.
+2026-06-07 06:59:11,611 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:59:14,607 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:59:16,062 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:59:28,429 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 06:59:28,473 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 06:59:30,723 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 06:59:30,735 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:59:31,756 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "0f0e30d8-7cc8-4efd-88b9-f7f9a8f7eca3", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 06:59:33,311 [INFO] root: Creando nuevo dispatcher para tenant tenant_ef67fe6a (Schema: schema_ef67fe6a)
+2026-06-07 06:59:34,764 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: schema_ef67fe6a
+2026-06-07 06:59:37,645 [INFO] DatabaseManager: PostgreSQL DB initialized for schema: schema_ef67fe6a
+2026-06-07 06:59:39,362 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 06:59:40,317 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 06:59:40,317 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:59:41,333 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "0f0e30d8-7cc8-4efd-88b9-f7f9a8f7eca3", "filter": "Prueba"}
+2026-06-07 06:59:43,632 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 06:59:44,586 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 06:59:45,606 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 06:59:46,368 [INFO] CommandDispatcher: Executing command: sync.push | User Role: OWNER
+2026-06-07 06:59:46,368 [ERROR] CommandDispatcher: Exception executing sync.push: 'CommandDispatcher' object has no attribute 'sync_service'
+2026-06-07 06:59:46,369 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 07:00:21,994 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 07:00:22,047 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 07:00:24,282 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 07:00:24,292 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:00:25,312 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "7f3ed281-3335-4d0a-9863-ed2712450177", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 07:00:27,620 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 07:00:28,595 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 07:00:28,595 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:00:29,618 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "7f3ed281-3335-4d0a-9863-ed2712450177", "filter": "Prueba"}
+2026-06-07 07:00:31,952 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 07:00:32,909 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:00:33,934 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 07:00:34,693 [INFO] CommandDispatcher: Executing command: sync.push | User Role: OWNER
+2026-06-07 07:00:34,693 [ERROR] CommandDispatcher: Exception executing sync.push: 'CommandDispatcher' object has no attribute 'sync_service'
+2026-06-07 07:00:34,694 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
