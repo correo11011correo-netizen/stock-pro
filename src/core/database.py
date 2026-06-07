@@ -11,6 +11,10 @@ class DatabaseManager:
     Implementa aislamiento total mediante Schemas dinámicos por negocio.
     """
     
+    # Diccionario global para rastrear esquemas de conexiones en el pool
+    # {connection_id: schema_name}
+    _connection_schemas = {}
+
     def __init__(self, schema_name="public"):
         self.schema_name = schema_name
         self.logger = logging.getLogger("DatabaseManager")
@@ -35,11 +39,15 @@ class DatabaseManager:
     def _get_connection(self):
         """Obtiene una conexión del pool y configura el esquema actual."""
         conn = self.pool.getconn()
-        # Guardamos el esquema actual en el objeto de conexión para evitar SET search_path redundantes
-        if not hasattr(conn, '_current_schema') or conn._current_schema != self.schema_name:
+        conn_id = id(conn)
+        
+        # Usamos el diccionario de clase para evitar AttributeError en objetos de psycopg2
+        current_schema = DatabaseManager._connection_schemas.get(conn_id)
+        
+        if current_schema != self.schema_name:
             with conn.cursor() as cursor:
                 cursor.execute(f"SET search_path TO {self.schema_name}, public")
-            conn._current_schema = self.schema_name
+            DatabaseManager._connection_schemas[conn_id] = self.schema_name
         return conn
 
     def _return_connection(self, conn):

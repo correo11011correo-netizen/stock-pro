@@ -885,3 +885,17 @@ json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:
 2026-06-07 10:59:37,024 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
 2026-06-07 10:59:37,998 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 32.000 | Solicitado: 1
 2026-06-07 10:59:38,003 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 11:04:49,843 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 11:04:49,844 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 11:04:52,057 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 11:04:52,058 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 11:04:53,064 [INFO] root: RAW BODY RECEIVED: {"command": "venta.search", "token": "7fc040be-44ea-4ce3-b417-90d010a0bb37", "search": "a"}
+2026-06-07 11:04:55,281 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 11:04:56,253 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 11:04:57,287 [INFO] root: RAW BODY RECEIVED: {"command": "venta.add", "token": "7fc040be-44ea-4ce3-b417-90d010a0bb37", "codigo": "asdd"}
+2026-06-07 11:04:59,494 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 11:05:00,462 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 11:05:01,469 [INFO] root: RAW BODY RECEIVED: {"command": "venta.cobrar", "token": "7fc040be-44ea-4ce3-b417-90d010a0bb37", "cliente": "General", "items": [{"codigo": "asdd", "cantidad": 1}], "metodo_pago": "Efectivo", "paga_con": 1000, "alias": null}
+2026-06-07 11:05:03,685 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 11:05:04,653 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 32.000 | Solicitado: 1
+2026-06-07 11:05:04,658 [INFO] root: "POST / HTTP/1.1" 200 -

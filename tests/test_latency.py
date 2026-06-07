@@ -4,7 +4,7 @@ import json
 from typing import List, Dict, Any
 
 # Configuration
-BASE_URL = "http://localhost:8888"
+BASE_URL = "http://127.0.0.1:8888"
 MASTER_USER = "123"
 MASTER_PASS = "123"
 

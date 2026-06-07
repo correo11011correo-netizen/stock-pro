@@ -547,17 +547,25 @@ class WebAPIHandler(BaseHTTPRequestHandler):
                 return self._json_response({"status": "error", "message": "No se pudo localizar la base de datos del negocio."}, 500)
 
             is_pro_user = (user_session.get("plan") == "PRO" or user_session.get("plan") == "ENTERPRISE")
-            tenant_dispatcher = self.server_instance._get_tenant_dispatcher(tenant_id, schema_name)
+            tenant_db = self.server_instance._get_tenant_db(tenant_id, schema_name)
 
             logging.debug(f"🎯 Ejecutando comando para tenant '{tenant_id}': {command}")
-            result = tenant_dispatcher.execute(
-                command, 
-                params, 
-                current_user_role=user_session["role"], 
-                is_pro=is_pro_user,
-                user_permissions=self.auth_service.get_user_permissions(user_session["id"], tenant_id),
-                user_id=user_session["id"]
-            )
+            # Inyectamos la DB del tenant en el dispatcher global justo antes de ejecutar
+            # Para evitar race conditions en multi-hilo, lo ideal es que el execute reciba la db
+            # Pero como el dispatcher usa self.db, lo hacemos quirúrgicamente
+            original_db = self.dispatcher.db
+            try:
+                self.dispatcher.db = tenant_db
+                result = self.dispatcher.execute(
+                    command, 
+                    params, 
+                    current_user_role=user_session["role"], 
+                    is_pro=is_pro_user,
+                    user_permissions=self.auth_service.get_user_permissions(user_session["id"], tenant_id),
+                    user_id=user_session["id"]
+                )
+            finally:
+                self.dispatcher.db = original_db
             return self._json_response(result)
         except Exception as e:
             logging.exception(f"💥 [EXEC] Error processing command {command}: {e}")
@@ -569,39 +577,22 @@ class WebServer:
         self.auth_service = auth_service
         self.port = port
         self.server = None
-        self.tenant_dispatchers = {}
+        self.tenant_db_cache = {}
 
-    def _get_tenant_dispatcher(self, tenant_id, schema_name):
-        """Obtiene o crea un CommandDispatcher específico para un tenant."""
-        if tenant_id in self.tenant_dispatchers:
-            return self.tenant_dispatchers[tenant_id]
+    def _get_tenant_db(self, tenant_id, schema_name):
+        """Obtiene o crea el DatabaseManager para un tenant, cacheándolo."""
+        if tenant_id in self.tenant_db_cache:
+            return self.tenant_db_cache[tenant_id]
 
-        logging.info(f"Creando nuevo dispatcher para tenant {tenant_id} (Schema: {schema_name})")
+        logging.info(f"Cargando DB para tenant {tenant_id} (Schema: {schema_name})")
         from ..core.database import DatabaseManager
-        from ..core.stock_service import StockService
-        from ..core.sales_service import SalesService
-        from ..core.system_service import SystemService
-
         try:
             db = DatabaseManager(schema_name=schema_name)
             db._init_db()
-            
-            stock_service = StockService(db)
-            sales_service = SalesService(db, stock_service)
-            system_service = SystemService(db)
-            
-            dispatcher = CommandDispatcher(
-                db=db, 
-                stock_service=stock_service, 
-                sales_service=sales_service, 
-                system_service=system_service,
-                auth_service=self.auth_service
-            )
-            
-            self.tenant_dispatchers[tenant_id] = dispatcher
-            return dispatcher
+            self.tenant_db_cache[tenant_id] = db
+            return db
         except Exception as e:
-            logging.exception(f"Error creando dispatcher para tenant {tenant_id}: {e}")
+            logging.exception(f"Error creando DB para tenant {tenant_id}: {e}")
             raise e
 
     def _create_handler(self):
