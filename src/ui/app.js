@@ -157,7 +157,8 @@ const app = {
                 body: JSON.stringify(payload)
             });
 
-            return await res.json();
+            const json = await res.json();
+            return json.payload || json;
         } catch (err) {
             Logger.error('API', `❌ Error: ${err.message}`);
             return { status: 'error', message: err.message };
