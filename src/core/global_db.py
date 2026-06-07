@@ -99,6 +99,18 @@ class GlobalDatabaseManager:
                         expires_at TIMESTAMP WITH TIME ZONE NOT NULL
                     )
                 ''')
+                
+                # 7. Tabla de Configuración de Bots de WhatsApp (SaaS Multi-tenant)
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS user_bot_settings (
+                        tenant_id TEXT PRIMARY KEY REFERENCES tenants(id),
+                        whatsapp_token TEXT NOT NULL,
+                        phone_id TEXT NOT NULL,
+                        verify_token TEXT,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                ''')
+
                 # Migración: convertir columna expires_at a TIMESTAMP WITH TIME ZONE si existe como naive
                 cursor.execute('''
                     ALTER TABLE sessions

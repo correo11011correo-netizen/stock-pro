@@ -182,20 +182,27 @@ class CommandDispatcher:
     def _handle_auth_login(self, params):
         if not self.auth_service:
             return {"status": "error", "message": "AuthService no configurado."}
-        username = params.get("username") or params.get("user")
-        password = params.get("password") or params.get("pass")
+        
+        # Búsqueda exhaustiva de credenciales
+        username = params.get("username") or params.get("user") or params.get("user_id")
+        password = params.get("password") or params.get("pass") or params.get("pwd")
+        
         if not username or not password:
             return {"status": "error", "message": "Usuario y contraseña son obligatorios."}
+        
         return self.auth_service.login(username, password)
 
     def _handle_auth_register_owner(self, params):
         if not self.auth_service:
             return {"status": "error", "message": "AuthService no configurado."}
+        
         username = params.get("username") or params.get("user")
         password = params.get("password") or params.get("pass")
-        biz_name = params.get("business_name")
+        biz_name = params.get("business_name") or params.get("biz_name") or params.get("business")
+        
         if not all([username, password, biz_name]):
             return {"status": "error", "message": "Username, password y business_name son obligatorios."}
+            
         return self.auth_service.create_owner_account(username, password, biz_name)
 
     def _handle_auth_logout(self, params):

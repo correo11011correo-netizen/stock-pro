@@ -331,33 +331,28 @@ class WebAPIHandler(BaseHTTPRequestHandler):
         if post_path == '/' and command == 'auth.login':
             logging.info(f"🔐 [LOGIN] Procesando solicitud de login en POST /")
             try:
-                # Extracción robusta de credenciales
-                username = None
-                password = None
+                # Búsqueda exhaustiva de credenciales en todo el payload
+                all_data = {**data, **(params if isinstance(params, dict) else {})}
                 
-                if isinstance(data, dict):
-                    username = data.get("username") or data.get("user") or params.get("username") or params.get("user")
-                    password = data.get("password") or data.get("pass") or params.get("password") or params.get("pass")
+                username = all_data.get("username") or all_data.get("user")
+                password = all_data.get("password") or all_data.get("pass")
                 
-                logging.debug(f"🔑 [LOGIN] username='{username}' | password_received={bool(password)}")
+                logging.info(f"🔑 [LOGIN] Intento con -> user: {username} | pass: {'***' if password else 'NONE'}")
                 
                 if not username or not password:
-                    logging.warning(f"❌ [LOGIN] Credenciales incompletas: username='{username}' | password={bool(password)}")
+                    logging.warning(f"❌ [LOGIN] No se encontraron credenciales en el payload: {all_data}")
                     return self._json_response({"status": "error", "message": "Usuario y contraseña requeridos"}, 400)
                 
-                logging.info(f"📝 [LOGIN] Intentando login para usuario: {username}")
                 result = self.dispatcher.execute("auth.login", {"username": username, "password": password})
                 
-                logging.debug(f"📊 [LOGIN] Resultado dispatcher: {result}")
-                
                 if result.get("status") == "success":
-                    logging.info(f"✅ [LOGIN] Login exitoso para usuario: {username} | Token generado")
+                    logging.info(f"✅ [LOGIN] Login exitoso: {username}")
                     return self._json_response(result, 200)
                 else:
-                    logging.warning(f"❌ [LOGIN] Login rechazado para {username}: {result.get('message')}")
+                    logging.warning(f"❌ [LOGIN] Login rechazado: {result.get('message')}")
                     return self._json_response(result, 401)
             except Exception as e:
-                logging.exception(f"💥 [LOGIN] Excepción durante login: {e}")
+                logging.exception(f"💥 [LOGIN] Excepción: {e}")
                 return self._json_response({"status": "error", "message": str(e)}, 500)
 
         if post_path == '/' and command == 'auth.register_owner':

@@ -103,3 +103,97 @@ DETAIL:  Key (username)=(asd) already exists.
 2026-06-07 04:28:38,072 [INFO] root: "POST / HTTP/1.1" 200 -
 2026-06-07 04:28:44,456 [INFO] root: code 404, message Endpoint o archivo no encontrado
 2026-06-07 04:28:44,457 [INFO] root: "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+2026-06-07 05:53:11,352 [INFO] root: Logging system initialized.
+2026-06-07 05:53:12,852 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 05:53:15,764 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 05:53:17,248 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 05:53:53,855 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 05:53:53,981 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 05:53:58,514 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","token":null,"user":"asd","pass":"asd"}
+2026-06-07 05:53:58,518 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 05:54:02,667 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","token":null,"user":"asd","pass":"asd"}
+2026-06-07 05:54:02,671 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 05:55:00,214 [INFO] root: RAW BODY RECEIVED: {"command":"auth.register_owner","token":null,"business_name":"asd","username":"asd","password":"asd"}
+2026-06-07 05:55:00,216 [INFO] CommandDispatcher: Executing command: auth.register_owner | User Role: empleado
+2026-06-07 05:55:00,937 [WARNING] AuthService: Intento de crear usuario duplicado: asd
+2026-06-07 05:55:00,938 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 05:55:05,556 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","token":null,"user":"asd","pass":"asd"}
+2026-06-07 05:55:05,558 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 05:57:26,017 [INFO] root: RAW BODY RECEIVED: {\"command\":\"auth.login\", \"user\":\"asd\", \"pass\":\"asd\"}
+2026-06-07 05:57:26,019 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 254, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 05:57:26,058 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 05:59:00,705 [INFO] root: RAW BODY RECEIVED: {\"command\":\"auth.login\", \"user\":\"asd\", \"pass\":\"asd\"}
+2026-06-07 05:59:00,707 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 254, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 05:59:00,725 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 05:59:25,445 [INFO] root: Logging system initialized.
+2026-06-07 05:59:26,927 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 05:59:29,800 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 05:59:31,226 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 05:59:35,120 [INFO] root: RAW BODY RECEIVED: {\"command\":\"auth.login\", \"user\":\"asd\", \"pass\":\"asd\"}
+2026-06-07 05:59:35,120 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 254, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 05:59:35,121 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 05:59:55,776 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 05:59:55,779 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:01:38,423 [INFO] root: Logging system initialized.
+2026-06-07 06:01:39,898 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:01:42,784 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:01:44,236 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:01:51,651 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 06:01:51,652 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:02:45,415 [INFO] root: Logging system initialized.
+2026-06-07 06:02:46,872 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:02:49,689 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:02:51,111 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:02:53,376 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 06:02:53,627 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 06:02:56,642 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","token":null,"user":"asd","pass":"asd"}
+2026-06-07 06:02:56,643 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:03:02,032 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 06:03:02,033 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:04:40,428 [INFO] root: Logging system initialized.
+2026-06-07 06:04:41,970 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:04:44,964 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:04:46,489 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:04:49,422 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 06:04:49,422 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:06:15,788 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 06:06:15,789 [INFO] root: "POST / HTTP/1.1" 400 -
