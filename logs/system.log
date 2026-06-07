@@ -197,3 +197,11 @@ json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:
 2026-06-07 06:04:49,422 [INFO] root: "POST / HTTP/1.1" 400 -
 2026-06-07 06:06:15,788 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
 2026-06-07 06:06:15,789 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 06:15:04,787 [INFO] root: Logging system initialized.
+2026-06-07 06:15:06,279 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 06:15:09,213 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 06:15:10,720 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 06:15:15,932 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "user": "asd", "pass": "asd"}
+2026-06-07 06:15:15,968 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 06:15:18,151 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 06:15:18,162 [INFO] root: "POST / HTTP/1.1" 200 -
