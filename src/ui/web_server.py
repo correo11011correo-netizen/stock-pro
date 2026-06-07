@@ -336,8 +336,8 @@ class WebAPIHandler(BaseHTTPRequestHandler):
                 password = None
                 
                 if isinstance(data, dict):
-                    username = data.get("username") or params.get("username")
-                    password = data.get("password") or params.get("password")
+                    username = data.get("username") or data.get("user") or params.get("username") or params.get("user")
+                    password = data.get("password") or data.get("pass") or params.get("password") or params.get("pass")
                 
                 logging.debug(f"🔑 [LOGIN] username='{username}' | password_received={bool(password)}")
                 
@@ -369,8 +369,8 @@ class WebAPIHandler(BaseHTTPRequestHandler):
                 biz_name = None
                 
                 if isinstance(data, dict):
-                    username = data.get("username") or params.get("username")
-                    password = data.get("password") or params.get("password")
+                    username = data.get("username") or data.get("user") or params.get("username") or params.get("user")
+                    password = data.get("password") or data.get("pass") or params.get("password") or params.get("pass")
                     biz_name = data.get("business_name") or params.get("business_name")
                 
                 logging.debug(f"📊 [REGISTER] username='{username}' | password_received={bool(password)} | business_name='{biz_name}'")
