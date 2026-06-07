@@ -412,3 +412,40 @@ json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:
 2026-06-07 07:00:34,693 [INFO] CommandDispatcher: Executing command: sync.push | User Role: OWNER
 2026-06-07 07:00:34,693 [ERROR] CommandDispatcher: Exception executing sync.push: 'CommandDispatcher' object has no attribute 'sync_service'
 2026-06-07 07:00:34,694 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 07:01:54,940 [INFO] root: Logging system initialized.
+2026-06-07 07:01:56,355 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 07:01:59,091 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 07:02:00,542 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 07:02:19,096 [INFO] root: Logging system initialized.
+2026-06-07 07:02:20,535 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 07:02:23,327 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 07:02:24,796 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 07:03:24,860 [INFO] root: Logging system initialized.
+2026-06-07 07:03:26,382 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 07:03:29,335 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 07:03:30,821 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 07:05:14,279 [INFO] root: Logging system initialized.
+2026-06-07 07:05:15,797 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 07:05:18,742 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 07:05:20,256 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 07:05:23,500 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 07:05:23,532 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 07:05:25,739 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 07:05:25,749 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:05:26,787 [INFO] root: RAW BODY RECEIVED: {"command": "stock.add", "token": "d194d479-eddd-4db1-945b-d8b103034550", "codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 10, "categoria": "Electronica", "es_peso": false}
+2026-06-07 07:05:28,313 [INFO] root: Creando nuevo dispatcher para tenant tenant_ef67fe6a (Schema: schema_ef67fe6a)
+2026-06-07 07:05:29,764 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: schema_ef67fe6a
+2026-06-07 07:05:32,658 [INFO] DatabaseManager: PostgreSQL DB initialized for schema: schema_ef67fe6a
+2026-06-07 07:05:34,359 [INFO] CommandDispatcher: Executing command: stock.add | User Role: OWNER
+2026-06-07 07:05:35,323 [INFO] StockService: Producto procesado: Producto de Prueba (PROD-TEST-01)
+2026-06-07 07:05:35,324 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:05:36,343 [INFO] root: RAW BODY RECEIVED: {"command": "stock.list", "token": "d194d479-eddd-4db1-945b-d8b103034550", "filter": "Prueba"}
+2026-06-07 07:05:38,618 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 07:05:39,580 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 07:05:40,598 [INFO] root: RAW BODY RECEIVED: {"events": [{"action": "venta.nueva", "data": {"items": [{"codigo": "PROD-TEST-01", "nombre": "Producto de Prueba", "precio": 150.5, "cantidad": 1, "subtotal": 150.5}], "total": 150.5, "user_id": "asd"}}]}
+2026-06-07 07:05:41,349 [INFO] CommandDispatcher: Executing command: sync.push | User Role: OWNER
+2026-06-07 07:05:42,121 [ERROR] DatabaseManager: FetchOne Error: SELECT * FROM products WHERE codigo = %s | Error: relation "products" does not exist
+LINE 1: SELECT * FROM products WHERE codigo = 'PROD-TEST-01'
+                      ^
+
+2026-06-07 07:05:42,371 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -

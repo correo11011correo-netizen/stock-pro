@@ -24,7 +24,7 @@ class CommandDispatcher:
         from ..core.sync_service import SyncService
         self.import_service = ImportService(stock_service)
         self.sentinel_service = SentinelService(db)
-        self.sync_service = SyncService(stock_service)
+        self.sync_service = SyncService(db, stock_service, sales_service)
         
         self.logger = logging.getLogger("CommandDispatcher")
         
