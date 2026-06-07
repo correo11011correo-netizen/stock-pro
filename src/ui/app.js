@@ -541,23 +541,43 @@ const app = {
         const file = input.files[0];
         if (!file) return;
 
-        Logger.log('IMPORT', `📁 Archivo seleccionado: ${file.name}`);
+        Logger.log('IMPORT', `📁 Subiendo archivo: ${file.name}`);
         const logDiv = document.getElementById('import-log');
         const btnPreview = document.getElementById('btn-run-import');
         const statusDiv = document.getElementById('import-status');
         
-        logDiv.innerHTML = `Cargando archivo ${file.name}...`;
-        statusDiv.textContent = 'Archivo cargado';
-        statusDiv.style.color = 'var(--primary)';
-        btnPreview.disabled = false;
+        logDiv.innerHTML = `Subiendo archivo ${file.name} al servidor...`;
+        statusDiv.textContent = 'Subiendo...';
+        statusDiv.style.color = 'var(--warning)';
+        btnPreview.disabled = true;
 
-        // En una implementación real, aquí subiríamos el archivo al servidor.
-        // Para este prototipo, asumimos que el archivo está accesible en el servidor
-        // o que el servidor maneja la subida mediante un endpoint específico.
-        // Simularemos la ruta basada en el nombre del archivo para el ejemplo.
-        this.state.currentImportFile = `data/samples/${file.name}`; 
-        
-        Logger.success('IMPORT', 'Archivo listo para examinar');
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const json = await res.json();
+
+            if (json.status === 'success') {
+                this.state.currentImportFile = json.path;
+                Logger.success('IMPORT', `Archivo subido exitosamente: ${json.path}`);
+                logDiv.innerHTML = `✅ Archivo subido: ${file.name}<br>Listo para examinar.`;
+                statusDiv.textContent = 'Archivo cargado';
+                statusDiv.style.color = 'var(--primary)';
+                btnPreview.disabled = false;
+            } else {
+                throw new Error(json.message || 'Error desconocido al subir archivo');
+            }
+        } catch (err) {
+            Logger.error('IMPORT', `❌ Error en upload: ${err.message}`);
+            logDiv.innerHTML = `❌ Error al subir archivo: ${err.message}`;
+            statusDiv.textContent = 'Error de subida';
+            statusDiv.style.color = 'var(--error)';
+            Toast.error(`Error al subir archivo: ${err.message}`);
+        }
     },
 
     async runImportPreview() {

@@ -17,14 +17,24 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Solo cacheamos assets estáticos. Las llamadas a /api/ siempre deben intentar ir a red.
+  // Las llamadas a /api/ siempre deben intentar ir a red.
   if (event.request.url.includes('/api/')) {
     return; 
   }
 
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        // Si la red funciona, actualizamos la caché con la nueva versión
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // Si falla la red (Offline), usamos la caché
+        return caches.match(event.request);
+      })
   );
 });
