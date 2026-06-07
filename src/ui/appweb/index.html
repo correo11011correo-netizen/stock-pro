@@ -34,7 +34,10 @@
                     <span id="user-role-badge" class="badge">Rol</span>
                 </div>
                 <div id="sync-status" class="status-online">Online</div>
-                <button onclick="app.logout()" class="btn-logout" style="background:none; border:1px solid #334155; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Salir</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button onclick="app.toggleConsole()" class="btn-console" style="background:none; border:1px solid #334155; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">💻 Console</button>
+                    <button onclick="app.logout()" class="btn-logout" style="background:none; border:1px solid #334155; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">Salir</button>
+                </div>
             </header>
 
             <nav class="tab-container">
@@ -114,6 +117,35 @@
                 </div>
             </main>
         </div>
+
+        <!-- System Console Drawer -->
+        <div id="sys-console" class="sys-console hidden">
+            <div class="console-header">
+                <span>System Console</span>
+                <button onclick="app.toggleConsole()">✕</button>
+            </div>
+            <div id="console-logs" class="console-logs"></div>
+            <div class="console-input-area">
+                <span>></span>
+                <input type="text" id="console-cmd" placeholder="Escribe un comando..." onkeydown="if(event.key === 'Enter') app.executeConsoleCmd()">
+            </div>
+        </div>
+    </div>
+
+    <script src="js/db-local.js"></script>
+    <script src="js/sync-engine.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registrado:', reg.scope))
+                    .catch(err => console.log('Error registrando SW:', err));
+            });
+        }
+    </script>
+</body>
+</html>
     </div>
 
     <script src="js/db-local.js"></script>

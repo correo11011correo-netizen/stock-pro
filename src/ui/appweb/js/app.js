@@ -20,9 +20,59 @@ const app = {
         }, 3000);
     },
 
+    // ── System Console Logic ──────────────────────────────────────────────
+    toggleConsole() {
+        const consoleEl = document.getElementById('sys-console');
+        consoleEl.classList.toggle('hidden');
+    },
+
+    logToConsole(msg, type = 'info') {
+        const logsEl = document.getElementById('console-logs');
+        if (!logsEl) return;
+
+        const entry = document.createElement('div');
+        entry.className = `console-log-entry console-log-${type}`;
+
+        const timestamp = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        entry.textContent = `[${timestamp}] ${msg}`;
+
+        logsEl.appendChild(entry);
+        logsEl.scrollTop = logsEl.scrollHeight;
+    },
+
+    async executeConsoleCmd() {
+        const input = document.getElementById('console-cmd');
+        const cmd = input.value.trim();
+        if (!cmd) return;
+
+        this.logToConsole(`> ${cmd}`, 'cmd');
+        input.value = '';
+
+        // Simple command mapping
+        const commands = {
+            'sync': () => this.syncNow(),
+            'clear': () => {
+                document.getElementById('console-logs').innerHTML = '';
+                this.logToConsole('Console cleared');
+            },
+            'status': () => {
+                this.logToConsole(`User: ${this.user?.username} | Role: ${this.user?.role} | Token: ${!!this.state?.token}`);
+            },
+            'reload': () => location.reload()
+        };
+
+        if (commands[cmd.toLowerCase()]) {
+            await commands[cmd.toLowerCase()]();
+        } else {
+            this.logToConsole(`Unknown command: ${cmd}`, 'error');
+        }
+    },
+
     async handleLogin() {
         const u = document.getElementById('login-user').value;
         const p = document.getElementById('login-pass').value;
+
+        this.logToConsole(`Attempting login for: ${u}...`);
 
         try {
             const res = await fetch('/api/auth/login', {
@@ -42,14 +92,16 @@ const app = {
                 await LocalDB.setSession(this.user);
                 this.setupUI();
                 this.showScreen('screen-main');
+                this.logToConsole(`Login successful. Welcome ${u}!`, 'success');
                 await SyncEngine.sync(); 
             } else {
                 const msg = data.payload ? data.payload.message : (data.message || "Error de autenticación");
                 document.getElementById('login-error').textContent = msg;
+                this.logToConsole(`Login failed: ${msg}`, 'error');
             }
         } catch (e) {
-
             document.getElementById('login-error').textContent = "Error de conexión. Inicie sesión online primero.";
+            this.logToConsole(`Connection error: ${e.message}`, 'error');
         }
     },
 
