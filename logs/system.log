@@ -522,3 +522,165 @@ LINE 1: SELECT * FROM products WHERE codigo = 'PROD-TEST-01'
 2026-06-07 08:46:25,590 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
 2026-06-07 08:46:28,813 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
 2026-06-07 08:46:30,341 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 09:57:42,086 [INFO] root: Logging system initialized.
+2026-06-07 09:57:43,701 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 09:57:47,006 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 09:57:48,436 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 09:59:40,596 [INFO] root: RAW BODY RECEIVED: {\
+2026-06-07 09:59:40,597 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 264, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 09:59:40,602 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 10:00:06,772 [INFO] root: RAW BODY RECEIVED: {\
+2026-06-07 10:00:06,773 [ERROR] root: JSONDecodeError en /: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+Traceback (most recent call last):
+  File "C:\Users\Valentin\Desktop\Nueva carpeta\whatsapp-hub\stock-pro\src\ui\web_server.py", line 264, in do_POST
+    data = json.loads(raw_body.decode('utf-8'))
+  File "C:\Python314\Lib\json\__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2026-06-07 10:00:06,778 [INFO] root: "POST / HTTP/1.1" 400 -
+2026-06-07 10:00:34,168 [INFO] root: RAW BODY RECEIVED: {"command": "auth.register_owner", "params": {"username": "admin_test", "password": "Password123!", "business_name": "Tienda de Prueba"}}
+2026-06-07 10:00:34,219 [INFO] CommandDispatcher: Executing command: auth.register_owner | User Role: empleado
+2026-06-07 10:00:37,163 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: schema_9f77b37c
+2026-06-07 10:00:40,050 [INFO] DatabaseManager: PostgreSQL DB initialized for schema: schema_9f77b37c
+2026-06-07 10:00:40,803 [INFO] AuthService: Nuevo dueño creado: admin_test para negocio Tienda de Prueba (Schema: schema_9f77b37c)
+2026-06-07 10:00:40,827 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:01:16,594 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:08:45,089 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:08:53,841 [INFO] root: RAW BODY RECEIVED: {"username":"asd","password":"asd"}
+2026-06-07 10:08:55,363 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 10:09:05,562 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:09:07,834 [INFO] AuthService: Cuenta MASTER creada: 123 (id=master_ddf03f2a)
+2026-06-07 10:09:07,835 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 10:09:13,263 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 403 -
+2026-06-07 10:09:14,011 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 403 -
+2026-06-07 10:09:19,825 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 403 -
+2026-06-07 10:09:21,244 [INFO] root: "GET /api/admin/users?page=1&per_page=30&search= HTTP/1.1" 403 -
+2026-06-07 10:09:23,395 [INFO] root: "GET /api/admin/audit-logs?page=1&per_page=50 HTTP/1.1" 403 -
+2026-06-07 10:10:52,133 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 403 -
+2026-06-07 10:10:53,352 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:11:58,410 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:12:02,298 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:12:02,306 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:12:10,809 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:12:15,644 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:12:15,652 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:12:22,455 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:12:23,229 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 10:12:28,402 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 403 -
+2026-06-07 10:12:29,457 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 403 -
+2026-06-07 10:12:30,196 [INFO] root: "GET /api/admin/users?page=1&per_page=30&search= HTTP/1.1" 403 -
+2026-06-07 10:12:31,481 [INFO] root: "GET /api/admin/audit-logs?page=1&per_page=50 HTTP/1.1" 403 -
+2026-06-07 10:12:35,070 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 403 -
+2026-06-07 10:12:35,430 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 403 -
+2026-06-07 10:12:38,112 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:12:44,143 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:12:44,151 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:12:48,196 [INFO] root: RAW BODY RECEIVED: {"username":"123asd","password":"123asd"}
+2026-06-07 10:12:48,205 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:13:26,656 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:13:32,618 [INFO] root: RAW BODY RECEIVED: {"username":"asdasd","password":"asdasd"}
+2026-06-07 10:13:32,628 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:13:38,816 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:13:41,091 [INFO] AuthService: Cuenta MASTER creada: 123 (id=master_dc412ac4)
+2026-06-07 10:13:41,092 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 10:13:41,106 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:13:41,118 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:13:47,207 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:13:50,629 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:13:50,638 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:14:11,167 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:14:11,175 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:16:28,314 [INFO] root: Logging system initialized.
+2026-06-07 10:16:29,797 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 10:16:32,918 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 10:16:34,436 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 10:16:47,377 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:16:51,930 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:16:51,930 [INFO] root: "POST /api/admin/login HTTP/1.1" 403 -
+2026-06-07 10:19:27,287 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:19:31,051 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:19:31,052 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:19:32,555 [INFO] AuthService: MASTER admin '123' autenticado. Sesión persistida.
+2026-06-07 10:19:32,556 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:19:37,532 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 200 -
+2026-06-07 10:19:39,895 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:19:50,041 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:19:59,616 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 200 -
+2026-06-07 10:20:10,658 [INFO] root: "GET /api/admin/users?page=1&per_page=30&search= HTTP/1.1" 200 -
+2026-06-07 10:20:28,300 [INFO] root: RAW BODY RECEIVED: {"plan":"PRO","credits":1000}
+2026-06-07 10:20:30,209 [INFO] root: RAW BODY RECEIVED: {"plan":"PRO","credits":1000}
+2026-06-07 10:20:31,746 [INFO] AuthService: Suscripción actualizada: tenant=tenant_9f77b37c, plan=PRO, +1000 créditos.
+2026-06-07 10:20:32,506 [INFO] root: "POST /api/admin/tenants/tenant_9f77b37c/subscription HTTP/1.1" 200 -
+2026-06-07 10:20:35,267 [INFO] AuthService: Suscripción actualizada: tenant=tenant_9f77b37c, plan=PRO, +1000 créditos.
+2026-06-07 10:20:36,024 [INFO] root: "POST /api/admin/tenants/tenant_9f77b37c/subscription HTTP/1.1" 200 -
+2026-06-07 10:20:36,168 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 200 -
+2026-06-07 10:20:38,758 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 200 -
+2026-06-07 10:20:58,303 [INFO] root: "GET /api/admin/users?page=1&per_page=30&search=asd HTTP/1.1" 200 -
+2026-06-07 10:24:50,296 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 200 -
+2026-06-07 10:24:53,440 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:25:58,636 [INFO] root: "GET /api/admin/users?page=1&per_page=30&search=asd HTTP/1.1" 200 -
+2026-06-07 10:27:33,028 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 10:27:33,030 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:27:35,327 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:27:35,328 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:27:36,357 [INFO] root: RAW BODY RECEIVED: {"command": "venta.search", "token": "3a3c01e0-7a14-47ba-8db6-428280784ca6", "search": "a"}
+2026-06-07 10:27:37,873 [INFO] root: Creando nuevo dispatcher para tenant tenant_ef67fe6a (Schema: schema_ef67fe6a)
+2026-06-07 10:27:39,374 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: schema_ef67fe6a
+2026-06-07 10:27:42,345 [INFO] DatabaseManager: PostgreSQL DB initialized for schema: schema_ef67fe6a
+2026-06-07 10:27:44,089 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:27:45,083 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:27:46,112 [INFO] root: RAW BODY RECEIVED: {"command": "venta.add", "token": "3a3c01e0-7a14-47ba-8db6-428280784ca6", "codigo": "asdd"}
+2026-06-07 10:27:48,380 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:27:49,367 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:12,785 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:31:13,079 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:31:16,697 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","params":{"username":"asd","password":"asd"},"role":"empleado","is_pro":false}
+2026-06-07 10:31:16,697 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:31:18,969 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:31:18,969 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:19,276 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:31:21,579 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:31:22,287 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:31:22,569 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:24,562 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:31:25,413 [INFO] root: RAW BODY RECEIVED: {"command":"venta.search","params":{"search":"as"},"role":"OWNER","is_pro":false}
+2026-06-07 10:31:25,560 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:27,683 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:31:28,672 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:32,662 [INFO] root: RAW BODY RECEIVED: {"command":"venta.search","params":{"search":"as"},"role":"OWNER","is_pro":false}
+2026-06-07 10:31:34,943 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:31:35,937 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:37,255 [INFO] root: RAW BODY RECEIVED: {"command":"venta.add","params":{"codigo":"asd"},"role":"OWNER","is_pro":false}
+2026-06-07 10:31:39,527 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:31:39,790 [INFO] root: RAW BODY RECEIVED: {"command":"venta.add","params":{"codigo":"asd"},"role":"OWNER","is_pro":false}
+2026-06-07 10:31:40,520 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:31:42,062 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:31:43,050 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:34:47,774 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:34:48,183 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:34:55,830 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:34:56,146 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:36:19,296 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:36:19,548 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:36:24,577 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:36:24,888 [INFO] root: "GET /app.js HTTP/1.1" 200 -

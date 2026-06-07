@@ -608,7 +608,7 @@ async function handleSetupSubmit(e) {
       showToast('Cuenta MASTER creada. Iniciando sesión...');
       
       // AUTO-LOGIN: Iniciar sesión inmediatamente después de crear la cuenta
-      const loginRes = await api('POST', '/api/admin/login', {
+      const loginRes = await api('POST', '/api/auth/login', {
         username: document.getElementById('setup-username').value,
         password: document.getElementById('setup-password').value
       });

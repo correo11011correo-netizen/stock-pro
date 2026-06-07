@@ -695,14 +695,102 @@ const app = {
         Logger.log('SALES', 'Respuesta:', res);
         
         if (res.status === 'success') {
+            this.addToCart(res.data);
             Logger.success('SALES', '✅ Producto agregado al carrito');
-            this.state.cart.push(res.data);
-            this.renderCart();
             document.getElementById('sale-scan').value = '';
             Toast.success('Producto agregado');
         } else {
             Logger.error('SALES', `❌ Error: ${res.message}`);
             Toast.error(res.message);
+        }
+    },
+
+    async handleSaleSearchInput() {
+        const search = document.getElementById('sale-scan')?.value;
+        const dropdown = document.getElementById('quick-results');
+        if (!dropdown) return;
+
+        if (!search || search.length < 2) {
+            dropdown.classList.remove('active');
+            dropdown.innerHTML = '';
+            return;
+        }
+
+        Logger.log('SALES', `Buscando productos: ${search}`);
+        const res = await this.apiCall('venta.search', { search });
+        
+        if (res.status === 'success' && res.data) {
+            this.renderSearchResults(res.data);
+        } else {
+            dropdown.classList.remove('active');
+        }
+    },
+
+    renderSearchResults(products) {
+        const dropdown = document.getElementById('quick-results');
+        if (!dropdown) return;
+        
+        dropdown.innerHTML = '';
+        
+        if (products.length === 0) {
+            dropdown.innerHTML = '<div class="search-result-item">No se encontraron productos</div>';
+        } else {
+            products.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'search-result-item';
+                div.innerHTML = `
+                    <div class="search-result-code">${p.codigo}</div>
+                    <div class="search-result-name">${p.nombre}</div>
+                    <div class="search-result-meta">$${parseFloat(p.precio || 0).toFixed(2)} | Stock: ${p.cantidad}</div>
+                `;
+                div.onclick = () => this.selectSearchResult(p);
+                dropdown.appendChild(div);
+            });
+        }
+        dropdown.classList.add('active');
+    },
+
+    async selectSearchResult(product) {
+        Logger.log('SALES', `Producto seleccionado: ${product.codigo}`);
+        const res = await this.apiCall('venta.add', { codigo: product.codigo });
+        
+        if (res.status === 'success') {
+            this.addToCart(res.data);
+            Logger.success('SALES', '✅ Producto agregado al carrito');
+            document.getElementById('sale-scan').value = '';
+            document.getElementById('quick-results').classList.remove('active');
+            Toast.success(`Agregado: ${product.nombre}`);
+        } else {
+            Logger.error('SALES', `❌ Error: ${res.message}`);
+            Toast.error(res.message);
+        }
+    },
+
+    addToCart(product) {
+        const existingIdx = this.state.cart.findIndex(item => (item.codigo || item.code) === (product.codigo || product.code));
+        
+        if (existingIdx > -1) {
+            this.state.cart[existingIdx].cantidad = (this.state.cart[existingIdx].cantidad || 1) + 1;
+            Logger.log('SALES', `Incrementando cantidad de ${product.nombre} a ${this.state.cart[existingIdx].cantidad}`);
+        } else {
+            // Asegurar que el item tenga una cantidad inicial de 1
+            const itemToAdd = { ...product, cantidad: 1 };
+            this.state.cart.push(itemToAdd);
+            Logger.log('SALES', `Agregando nuevo item al carrito: ${product.nombre}`);
+        }
+        this.renderCart();
+    },
+
+    updateCartQuantity(idx, delta) {
+        Logger.log('SALES', `Actualizando cantidad item ${idx} por ${delta}`);
+        const item = this.state.cart[idx];
+        const newQty = (item.cantidad || 1) + delta;
+        
+        if (newQty <= 0) {
+            this.removeFromCart(idx);
+        } else {
+            item.cantidad = newQty;
+            this.renderCart();
         }
     },
 
@@ -718,13 +806,27 @@ const app = {
         let total = 0;
         
         this.state.cart.forEach((item, idx) => {
-            const subtotal = (item.precio || item.price || 0) * (item.cantidad || item.quantity || 1);
+            const qty = item.cantidad || 1;
+            const price = item.precio || item.price || 0;
+            const subtotal = price * qty;
             total += subtotal;
+            
             const div = document.createElement('div');
-            div.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:8px; padding:8px; background:var(--background); border-radius:8px; font-size:0.9rem;';
+            div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:8px; background:var(--background); border:1px solid var(--border); border-radius:8px; font-size:0.9rem;';
             div.innerHTML = `
-                <span>${item.nombre || item.name} x ${item.cantidad || item.quantity || 1}</span>
-                <span>$${subtotal.toFixed(2)} <button onclick="app.removeFromCart(${idx})" style="border:none; background:none; cursor:pointer; color:var(--error)">🗑️</button></span>
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                    <span style="font-weight:600;">${item.nombre || item.name}</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted)">$${price.toFixed(2)} c/u</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:5px; background:var(--surface); border-radius:8px; padding:2px 5px; border:1px solid var(--border);">
+                        <button onclick="app.updateCartQuantity(${idx}, -1)" style="border:none; background:none; cursor:pointer; color:var(--text); font-weight:bold; padding:0 5px;">-</button>
+                        <span style="min-width:20px; text-align:center; font-weight:bold;">${qty}</span>
+                        <button onclick="app.updateCartQuantity(${idx}, 1)" style="border:none; background:none; cursor:pointer; color:var(--text); font-weight:bold; padding:0 5px;">+</button>
+                    </div>
+                    <span style="font-weight:bold; min-width:60px; text-align:right;">$${subtotal.toFixed(2)}</span>
+                    <button onclick="app.removeFromCart(${idx})" style="border:none; background:none; cursor:pointer; color:var(--error); margin-left:5px;">🗑️</button>
+                </div>
             `;
             container.appendChild(div);
         });
