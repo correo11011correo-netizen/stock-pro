@@ -1,0 +1,3 @@
+sku|item|cost|qty|dept
+L001|Cable HDMI|5.99|100|Accesorios
+L002|Adaptador USB|12.50|50|Accesorios

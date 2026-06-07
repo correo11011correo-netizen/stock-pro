@@ -1,0 +1,16 @@
+[
+    {
+        "id": "api-1",
+        "name": "Teclado Mec\u00e1nico",
+        "price": 89.9,
+        "stock": 20,
+        "category": "Perif\u00e9ricos"
+    },
+    {
+        "id": "api-2",
+        "name": "Mouse Gamer",
+        "price": 45.0,
+        "stock": 30,
+        "category": "Perif\u00e9ricos"
+    }
+]

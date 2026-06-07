@@ -3,10 +3,27 @@ const app = {
     cart: [],          // [{ codigo, nombre, precio, cantidad, subtotal }]
     _searchDebounce: null,
 
+    showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+
+        container.appendChild(toast);
+
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    },
+
     async handleLogin() {
         const u = document.getElementById('login-user').value;
         const p = document.getElementById('login-pass').value;
-        
+
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -39,7 +56,7 @@ const app = {
     setupUI() {
         document.getElementById('user-role-badge').textContent = this.user.role;
         document.getElementById('user-name-display').textContent = this.user.username;
-        
+
         // Lógica de RAM: Solo habilitar Admin si es Dueño o Admin
         if (this.user.role === 'OWNER' || this.user.role === 'admin' || this.user.role === 'MASTER') {
             document.getElementById('btn-admin-tab').classList.remove('hidden');
@@ -196,8 +213,8 @@ const app = {
                         }
                         counts[item.codigo].total += item.cantidad || 1;
                     });
-                }
-            });
+                    }
+                });
             bestsellers = Object.values(counts)
                 .sort((a, b) => b.total - a.total)
                 .slice(0, 10);
@@ -267,6 +284,7 @@ const app = {
         }
 
         this.updateCartUI();
+        this.showToast(`Agregado: ${prod.nombre}`, 'success');
     },
 
     incrementQuantity(codigo) {
@@ -351,14 +369,14 @@ const app = {
             });
 
             if (res.ok) {
-                alert("Venta sincronizada en tiempo real");
+                this.showToast("Venta sincronizada en tiempo real", 'success');
             } else {
                 throw new Error("Servidor no disponible");
             }
         } catch (e) {
             // Guardado local si falla la conexión
             await LocalDB.addToQueue('venta.nueva', saleData);
-            alert("Modo Offline: Venta guardada. Se sincronizará al recuperar internet.");
+            this.showToast("Modo Offline: Venta guardada localmente", 'info');
         }
 
         this.cart = [];
@@ -375,7 +393,6 @@ const app = {
     },
 
     adminAction(action) {
-        alert(`Abriendo módulo de ${action}... (Requiere conexión online)`);
-        // Aquí se redirigiría al panel web completo o se llamaría a la API
+        this.showToast(`Abriendo módulo de ${action}... (Online)`, 'info');
     }
 };

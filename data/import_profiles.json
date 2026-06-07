@@ -1,0 +1,12 @@
+{
+    "Test": {
+        "codigo": "Ref"
+    },
+    "TestSaaS": {
+        "codigo": "Referencia",
+        "nombre": "Nombre Producto",
+        "precio": "Precio Venta",
+        "cantidad": "Existencias",
+        "categoria": "Categoría"
+    }
+}

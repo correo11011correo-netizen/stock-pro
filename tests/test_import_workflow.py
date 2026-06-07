@@ -9,8 +9,10 @@ from src.commands.dispatcher import CommandDispatcher
 
 class TestFlexibleImport(unittest.TestCase):
     def setUp(self):
-        # Setup a mock DB and services
-        self.db = DatabaseManager(":memory:")
+        # Setup DB and services
+        # We use a dedicated schema for testing to avoid affecting production data
+        self.db = DatabaseManager("test_import_workflow")
+        self.db._init_db()
         self.stock_service = StockService(self.db)
         self.import_service = ImportService(self.stock_service)
         self.dispatcher = CommandDispatcher(self.db, self.stock_service, None, None)
@@ -20,7 +22,7 @@ class TestFlexibleImport(unittest.TestCase):
         with open(self.csv_path, "w", encoding="utf-8") as f:
             f.write("Referencia,Nombre Producto,Precio Venta,Existencias,Categoría\n")
             f.write("REF001,Producto A,10.50,100,Electronica\n")
-            f.write("REF002,Producto B,20,00,50,Hogar\n")
+            f.write("REF002,Producto B,20.00,50,Hogar\n")
 
     def test_full_import_workflow(self):
         # 1. Preview (should auto-detect or needs_mapping)
@@ -46,7 +48,7 @@ class TestFlexibleImport(unittest.TestCase):
         save_res = self.dispatcher.execute("stock.import.save_profile", {
             "mapping_id": "TestSaaS",
             "mapping": custom_mapping
-        })
+        }, current_user_role="admin")
         self.assertEqual(save_res["status"], "success")
         
         # 4. Use Profile
