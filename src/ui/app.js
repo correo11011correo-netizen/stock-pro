@@ -45,10 +45,25 @@ const app = {
             this.state.user = localStorage.getItem('user');
             this.state.role = localStorage.getItem('role');
             this.state.business = localStorage.getItem('business');
+            this.updateAuthUI(true);
             this.switchView('view-stock');
         } else {
+            this.state.token = null;
+            this.updateAuthUI(false);
             this.switchView('view-login');
         }
+    },
+
+    updateAuthUI(isAuthenticated) {
+        const nav = document.getElementById('bottom-nav');
+        const submenu = document.getElementById('submenu-popup');
+        if (nav) {
+            isAuthenticated ? nav.classList.remove('hidden') : nav.classList.add('hidden');
+        }
+        if (submenu) {
+            isAuthenticated ? submenu.classList.remove('hidden') : submenu.classList.add('hidden');
+        }
+        Logger.log('UI', `AuthUI updated: ${isAuthenticated ? 'Authenticated' : 'Guest'}`);
     },
 
     // ─────────────────────────────────────────────────────────────
@@ -77,6 +92,7 @@ const app = {
             localStorage.setItem('role', res.role);
             localStorage.setItem('business', res.business);
 
+            this.updateAuthUI(true);
             Logger.success('AUTH', `✅ Login exitoso: ${user}`);
             Toast.success(`¡Bienvenido ${user}!`);
             this.switchView('view-stock');
@@ -118,6 +134,7 @@ const app = {
                 theme: 'dark',
                 cart: [],
             };
+            this.updateAuthUI(false);
             this.switchView('view-login');
             Logger.success('AUTH', '👋 Sesión cerrada');
         }
