@@ -105,6 +105,46 @@ const app = {
         }
     },
 
+    async handleFileUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const statusEl = document.getElementById('import-status');
+        const btnRun = document.getElementById('btn-run-import');
+        
+        this.logToConsole(`Uploading file: ${file.name}...`, 'info');
+        statusEl.textContent = 'Subiendo archivo...';
+        statusEl.style.color = 'var(--text-muted)';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (res.ok && data.payload?.status === 'success') {
+                this.logToConsole(`File uploaded successfully: ${data.payload.path}`, 'success');
+                this.showToast('Archivo subido correctamente', 'success');
+                statusEl.textContent = 'Archivo cargado con éxito';
+                statusEl.style.color = 'var(--success)';
+                if (btnRun) btnRun.disabled = false;
+            } else {
+                const errMsg = data.payload?.message || data.message || 'Error desconocido al subir archivo';
+                throw new Error(errMsg);
+            }
+        } catch (e) {
+            this.logToConsole(`Upload failed: ${e.message}`, 'error');
+            this.showToast(`Error al subir archivo: ${e.message}`, 'error');
+            statusEl.textContent = `❌ ${e.message}`;
+            statusEl.style.color = 'var(--error)';
+            if (btnRun) btnRun.disabled = true;
+        }
+    },
+
     setupUI() {
         document.getElementById('user-role-badge').textContent = this.user.role;
         document.getElementById('user-name-display').textContent = this.user.username;
