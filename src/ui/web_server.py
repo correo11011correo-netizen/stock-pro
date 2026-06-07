@@ -240,6 +240,8 @@ class WebAPIHandler(BaseHTTPRequestHandler):
         try:
             content_length = int(self.headers.get('Content-Length', 0))
             raw_body = self.rfile.read(content_length)
+            # 🔍 DEBUG EXTREMO: Loguear exactamente qué llega del cliente
+            logging.info(f"RAW BODY RECEIVED: {raw_body.decode('utf-8', errors='ignore')}")
         except Exception as e:
             logging.exception(f"Error leyendo cuerpo de petición POST: {e}")
             return self._json_response({"status": "error", "message": "Error al leer el cuerpo de la petición"}, 400)
@@ -329,9 +331,13 @@ class WebAPIHandler(BaseHTTPRequestHandler):
         if post_path == '/' and command == 'auth.login':
             logging.info(f"🔐 [LOGIN] Procesando solicitud de login en POST /")
             try:
-                # ✅ FIX: Buscar en params, no en data raíz
-                username = params.get("username") or data.get("username")
-                password = params.get("password") or data.get("password")
+                # Extracción robusta de credenciales
+                username = None
+                password = None
+                
+                if isinstance(data, dict):
+                    username = data.get("username") or params.get("username")
+                    password = data.get("password") or params.get("password")
                 
                 logging.debug(f"🔑 [LOGIN] username='{username}' | password_received={bool(password)}")
                 
@@ -357,10 +363,15 @@ class WebAPIHandler(BaseHTTPRequestHandler):
         if post_path == '/' and command == 'auth.register_owner':
             logging.info(f"📝 [REGISTER] Procesando solicitud de registro en POST /")
             try:
-                # ✅ FIX: Buscar en params, no en data raíz
-                username = params.get("username") or data.get("username")
-                password = params.get("password") or data.get("password")
-                biz_name = params.get("business_name") or data.get("business_name")
+                # Extracción robusta de credenciales
+                username = None
+                password = None
+                biz_name = None
+                
+                if isinstance(data, dict):
+                    username = data.get("username") or params.get("username")
+                    password = data.get("password") or params.get("password")
+                    biz_name = data.get("business_name") or params.get("business_name")
                 
                 logging.debug(f"📊 [REGISTER] username='{username}' | password_received={bool(password)} | business_name='{biz_name}'")
                 

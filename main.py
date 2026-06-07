@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+from dotenv import load_dotenv
 from src.core.database import DatabaseManager
 from src.core.global_db import GlobalDatabaseManager
 from src.core.auth_service import AuthService
@@ -46,6 +47,7 @@ def main():
     Punto de entrada principal del Sistema de Stock y Escaneo.
     Orquestra la carga de todos los componentes en orden.
     """
+    load_dotenv()
     setup_logging()
     logger = logging.getLogger("Main")
     logger.info("🚀 Iniciando Sistema de Stock y Escaneo (Multi-Tenant)...")
