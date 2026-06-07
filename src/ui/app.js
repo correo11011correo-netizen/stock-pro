@@ -112,7 +112,7 @@ const app = {
         }
 
         Logger.log('AUTH', `📝 Registrando negocio: ${business}`);
-        const res = await this.apiCall('auth.register', { business, user, pass });
+        const res = await this.apiCall('auth.register_owner', { business_name: business, username: user, password: pass });
 
         if (res.status === 'success') {
             Toast.success('Cuenta creada exitosamente');
