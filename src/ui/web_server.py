@@ -64,56 +64,36 @@ class WebAPIHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         logging.info(f"📩 GET Request: {self.path}")
-        ui_dir = os.path.dirname(__file__)
+        ui_dir = os.path.dirname(os.path.abspath(__file__))
         
-        # Normalizar ruta: eliminar query strings para la comprobación de archivos estáticos
+        # Normalizar ruta: eliminar query strings
         clean_path = self.path.split('?')[0]
 
-        # --- APP WEB PWA (Nueva versión híbrida) ---
-        if clean_path.startswith('/appweb'):
-            rel_path = clean_path.replace('/appweb/', '').lstrip('/')
-            if not rel_path or rel_path == '':
-                file_path = os.path.join(ui_dir, "appweb", "index.html")
-            else:
-                file_path = os.path.join(ui_dir, "appweb", rel_path)
-            
-            if os.path.exists(file_path) and os.path.isfile(file_path):
+        # --- ADMIN DASHBOARD (serve HTML) ---
+        if clean_path == '/admin' or clean_path == '/admin/' or (clean_path.startswith('/admin/') and not clean_path.startswith('/api/')):
+            file_path = os.path.join(ui_dir, "admin_dashboard.html")
+            logging.info(f"🔍 [DEBUG ADMIN] Path: {self.path} | File: {file_path} | Exists: {os.path.exists(file_path)}")
+            if os.path.exists(file_path):
                 try:
-                    mime_type, _ = mimetypes.guess_type(file_path)
                     content = Path(file_path).read_bytes()
                     self.send_response(200)
-                    self.send_header('Content-type', mime_type or 'application/octet-stream')
+                    self.send_header('Content-type', 'text/html; charset=utf-8')
                     self.send_header('Content-Length', len(content))
                     self.end_headers()
                     self.wfile.write(content)
                     return
                 except Exception as e:
-                    logging.error(f"Error sirviendo appweb {file_path}: {e}")
+                    logging.error(f"Error sirviendo admin dashboard: {e}")
                     self.send_error(500, f"Error interno: {e}")
                     return
+            else:
+                logging.warning(f"❌ [DEBUG ADMIN] Dashboard not found at {file_path}")
+                self.send_error(404, "Admin dashboard no encontrado")
+                return
 
-        # --- ADMIN DASHBOARD (serve HTML) ---
+        # --- APP WEB PWA (Nueva versión híbrida) ---
+        if clean_path.startswith('/appweb'):
 
-            if clean_path == '/admin' or clean_path == '/admin/' or (clean_path.startswith('/admin/') and not clean_path.startswith('/api/')):
-                # Si es /admin o una subruta no-API, servimos el dashboard
-                file_path = os.path.join(ui_dir, "admin_dashboard.html")
-                if os.path.exists(file_path):
-                    try:
-                        content = Path(file_path).read_bytes()
-                        self.send_response(200)
-                        self.send_header('Content-type', 'text/html; charset=utf-8')
-                        self.send_header('Content-Length', len(content))
-                        self.end_headers()
-                        self.wfile.write(content)
-                        return
-                    except Exception as e:
-                        self.send_error(500, f"Error interno: {e}")
-                        return
-                else:
-                    self.send_error(404, "Admin dashboard no encontrado")
-                    return
-
-        # --- ADMIN API (GET endpoints, all require MASTER role) ---
 
         # --- ADMIN API (GET endpoints, all require MASTER role) ---
 
@@ -436,16 +416,58 @@ class WebAPIHandler(BaseHTTPRequestHandler):
             logging.info(f"📝 [SETUP] Procesando solicitud de setup en POST /api/admin/setup")
             username = data.get("username") or params.get("username")
             password = data.get("password") or params.get("password")
-            biz_name = data.get("business_name") or params.get("business_name")
             
-            logging.debug(f"📊 [SETUP] Datos: username={username}, biz_name={biz_name}")
+            logging.debug(f"📊 [SETUP] Datos: username={username}")
             
-            res = self.dispatcher.execute("auth.register_owner", {
-                "username": username, 
-                "password": password, 
-                "business_name": biz_name
-            })
+            if not username or not password:
+                return self._json_response({"status": "error", "message": "Usuario y contraseña son obligatorios."}, 400)
+
+            res = self.auth_service.create_master_account(username, password)
             return self._json_response(res)
+
+        # --- ADMIN API (POST endpoints, all require MASTER role) ---
+        if post_path.startswith('/api/admin/'):
+            user_session, err = self._require_master()
+            if err:
+                return self._json_response(err, 403)
+            
+            admin_id = user_session["id"]
+
+            # POST /api/admin/tenants/{tenant_id}/delete
+            if '/delete' in post_path and '/api/admin/tenants/' in post_path:
+                try:
+                    tenant_id = post_path.split('/')[-2]
+                    result = self.auth_service.delete_tenant(tenant_id)
+                    self.auth_service.log_admin_action(admin_id, "DELETE_TENANT", f"Eliminado tenant {tenant_id}")
+                    return self._json_response(result)
+                except Exception as e:
+                    return self._json_response({"status": "error", "message": str(e)}, 500)
+
+            # POST /api/admin/tenants/{tenant_id}/subscription
+            if '/subscription' in post_path and '/api/admin/tenants/' in post_path:
+                try:
+                    tenant_id = post_path.split('/')[-2]
+                    plan = data.get("plan")
+                    credits = data.get("credits", 0)
+                    if not plan:
+                        return self._json_response({"status": "error", "message": "El plan es obligatorio."}, 400)
+                    result = self.auth_service.update_tenant_subscription(tenant_id, plan, credits)
+                    self.auth_service.log_admin_action(admin_id, "UPDATE_SUBSCRIPTION", f"Tenant {tenant_id} -> {plan}, +{credits} créditos")
+                    return self._json_response(result)
+                except Exception as e:
+                    return self._json_response({"status": "error", "message": str(e)}, 500)
+
+            # POST /api/admin/users/{user_id}/status
+            if '/status' in post_path and '/api/admin/users/' in post_path:
+                try:
+                    user_id = post_path.split('/')[-2]
+                    suspend = data.get("suspend", True)
+                    result = self.auth_service.suspend_user(user_id, suspend)
+                    action = "SUSPEND_USER" if suspend else "ACTIVATE_USER"
+                    self.auth_service.log_admin_action(admin_id, action, f"Usuario {user_id} {'suspendido' if suspend else 'activado'}")
+                    return self._json_response(result)
+                except Exception as e:
+                    return self._json_response({"status": "error", "message": str(e)}, 500)
 
         # --- FLUJO DE COMANDOS GENERALES (Requieren Sesión) ---
         if not command:

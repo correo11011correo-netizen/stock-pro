@@ -467,3 +467,47 @@ LINE 1: SELECT * FROM products WHERE codigo = 'PROD-TEST-01'
                       ^
 
 2026-06-07 07:23:40,680 [INFO] root: "POST /api/sync/push HTTP/1.1" 200 -
+2026-06-07 08:16:16,521 [INFO] root: Logging system initialized.
+2026-06-07 08:16:18,131 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 08:16:21,424 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 08:16:22,872 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 08:16:31,218 [INFO] root: RAW BODY RECEIVED: {"username": "admin_master", "password": "AdminPassword123!"}
+2026-06-07 08:16:31,274 [INFO] root: RAW BODY RECEIVED: {"username": "admin_master", "password": "AdminPassword123!"}
+2026-06-07 08:16:31,313 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 08:16:34,249 [INFO] root: "POST /api/auth/login HTTP/1.1" 401 -
+2026-06-07 08:16:34,557 [INFO] AuthService: Cuenta MASTER creada: admin_master (id=master_3299641a)
+2026-06-07 08:16:34,558 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 08:17:10,436 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:17:10,437 [INFO] root: "GET /admin HTTP/1.1" 404 -
+2026-06-07 08:20:06,451 [INFO] root: Logging system initialized.
+2026-06-07 08:20:07,951 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 08:20:11,108 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 08:20:12,602 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 08:20:35,259 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:20:35,259 [INFO] root: "GET /admin HTTP/1.1" 404 -
+2026-06-07 08:20:40,975 [INFO] root: RAW BODY RECEIVED: {"username": "admin_master", "password": "AdminPassword123!"}
+2026-06-07 08:20:41,048 [INFO] root: RAW BODY RECEIVED: {"username": "admin_master", "password": "AdminPassword123!"}
+2026-06-07 08:20:41,048 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 08:20:42,729 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 08:20:43,693 [INFO] AuthService: MASTER admin 'admin_master' autenticado. Sesión persistida.
+2026-06-07 08:20:43,694 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 08:21:05,482 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:21:05,482 [INFO] root: "GET /admin HTTP/1.1" 404 -
+2026-06-07 08:24:13,498 [INFO] root: Logging system initialized.
+2026-06-07 08:24:14,704 [INFO] root: RAW BODY RECEIVED: {"username": "admin_master", "password": "AdminPassword123!"}
+2026-06-07 08:24:14,705 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 08:24:14,994 [INFO] GlobalDatabaseManager: Global Database Pool inicializado.
+2026-06-07 08:24:16,159 [INFO] AuthService: MASTER admin 'admin_master' autenticado. Sesión persistida.
+2026-06-07 08:24:16,159 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 08:24:18,176 [INFO] GlobalDatabaseManager: Global Database initialized successfully in schema 'public'.
+2026-06-07 08:24:19,578 [INFO] root: RAW BODY RECEIVED: {"username": "admin_master", "password": "AdminPassword123!"}
+2026-06-07 08:24:19,639 [INFO] DatabaseManager: PostgreSQL Pool inicializado para el esquema: public
+2026-06-07 08:24:20,304 [INFO] root: "POST /api/admin/setup HTTP/1.1" 200 -
+2026-06-07 08:25:51,942 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:25:51,942 [INFO] root: "GET /admin HTTP/1.1" 404 -
+2026-06-07 08:25:52,804 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:25:52,804 [INFO] root: "GET /admin HTTP/1.1" 404 -
+2026-06-07 08:25:53,276 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:25:53,277 [INFO] root: "GET /admin HTTP/1.1" 404 -
+2026-06-07 08:26:11,957 [INFO] root: code 404, message Endpoint o archivo no encontrado
+2026-06-07 08:26:11,957 [INFO] root: "GET /admin HTTP/1.1" 404 -

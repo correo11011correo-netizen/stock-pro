@@ -111,7 +111,21 @@ class GlobalDatabaseManager:
                     )
                 ''')
 
+                # 8. Tabla de Entitlements (Licencias de funcionalidades)
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS entitlements (
+                        id SERIAL PRIMARY KEY,
+                        tenant_id TEXT REFERENCES tenants(id),
+                        feature_id TEXT NOT NULL,
+                        status TEXT DEFAULT 'active',
+                        granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        expires_at TIMESTAMP WITH TIME ZONE,
+                        UNIQUE(tenant_id, feature_id)
+                    )
+                ''')
+
                 # Migración: convertir columna expires_at a TIMESTAMP WITH TIME ZONE si existe como naive
+
                 cursor.execute('''
                     ALTER TABLE sessions
                         ALTER COLUMN expires_at TYPE TIMESTAMP WITH TIME ZONE
