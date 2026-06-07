@@ -35,9 +35,11 @@ class DatabaseManager:
     def _get_connection(self):
         """Obtiene una conexión del pool y configura el esquema actual."""
         conn = self.pool.getconn()
-        # Configuramos el search_path para que todas las consultas vayan al esquema del cliente
-        with conn.cursor() as cursor:
-            cursor.execute(f"SET search_path TO {self.schema_name}, public")
+        # Guardamos el esquema actual en el objeto de conexión para evitar SET search_path redundantes
+        if not hasattr(conn, '_current_schema') or conn._current_schema != self.schema_name:
+            with conn.cursor() as cursor:
+                cursor.execute(f"SET search_path TO {self.schema_name}, public")
+            conn._current_schema = self.schema_name
         return conn
 
     def _return_connection(self, conn):

@@ -81,33 +81,20 @@ class SalesService:
 
     def process_sale(self, cliente, items, metodo_pago, paga_con=0, alias=None):
         """
-        Procesa una venta completa:
-        1. Valida stock.
-        2. Calcula totales.
-        3. Verifica límites de alias si es transferencia.
-        4. Registra venta y detalle.
-        5. Actualiza stock y caja.
+        Procesa una venta completa usando los métodos estables del DatabaseManager.
         """
         try:
             self.logger.info(f"📊 Iniciando proceso de venta. Items: {len(items)}, Método: {metodo_pago}")
             
-            # 1. Calcular Total
             total_venta = 0
             processed_items = []
             
             for item in items:
-                # item: {codigo, cantidad (en kg si es peso)}
                 res = self.stock_service.get_product(item['codigo'])
                 if res["status"] == "error":
                     return {"status": "error", "message": f"Producto {item['codigo']} no encontrado."}
                 
                 p = res["data"]
-                
-                # DEBUG: Verificando valores en tiempo real
-                self.logger.debug(f"DEBUG STOCK: Producto {p['nombre']} | Disponible: {p['cantidad']} | Solicitado: {item['cantidad']}")
-                print(f"DEBUG STOCK: Producto {p['nombre']} | Disponible: {p['cantidad']} | Solicitado: {item['cantidad']}")
-
-                # VALIDACIÓN DE STOCK: Verificar que haya suficiente cantidad disponible
                 if p['cantidad'] < item['cantidad']:
                     return {
                         "status": "error", 
@@ -122,7 +109,6 @@ class SalesService:
                     "subtotal": subtotal
                 })
 
-            # 2. Validación de Alias (Límite Inteligente del repo original)
             if metodo_pago == "Transferencia" and alias:
                 alias_data = self.db.fetch_one("SELECT * FROM aliases WHERE nombre = %s", (alias,))
                 if alias_data:
@@ -131,64 +117,39 @@ class SalesService:
                 else:
                     return {"status": "error", "message": "Alias no registrado."}
 
-            # 3. Cálculo de Vuelto
             vuelto = 0
             if metodo_pago == "Efectivo":
                 if paga_con < total_venta:
                     return {"status": "error", "message": "Monto insuficiente para pago en efectivo."}
                 vuelto = paga_con - total_venta
 
-            self.logger.info(f"💰 Total de venta: ${total_venta}, Vuelto: ${vuelto}")
+            # Usamos execute() para evitar WinError 233 (manejo interno de pool)
+            sale_id = self.db.execute('''
+                INSERT INTO sales (total, cliente, metodo_pago, paga_con, vuelto)
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING id
+            ''', (total_venta, cliente, metodo_pago, paga_con, vuelto))
+            
+            if not sale_id:
+                return {"status": "error", "message": "Error al registrar la venta en la base de datos."}
 
-            # 4. Persistencia de la Venta (Transaccional)
-            # ✅ FIX PARA POSTGRESQL: Usar RETURNING id en lugar de lastrowid
-            with self.db._get_connection() as conn:
-                cursor = conn.cursor()
-                
-                # Insertar Venta con RETURNING para obtener el ID
-                self.logger.info(f"📝 Insertando venta en tabla sales...")
-                cursor.execute('''
-                    INSERT INTO sales (total, cliente, metodo_pago, paga_con, vuelto)
-                    VALUES (%s, %s, %s, %s, %s)
-                    RETURNING id
-                ''', (total_venta, cliente, metodo_pago, paga_con, vuelto))
-                
-                # ✅ CORRECCIÓN: Obtener el ID correctamente en PostgreSQL
-                sale_id = cursor.fetchone()[0]
-                self.logger.info(f"✅ Venta insertada con ID: {sale_id}")
-                
-                # Insertar Detalle
-                self.logger.info(f"📝 Insertando {len(processed_items)} items de venta...")
-                for pi in processed_items:
-                    cursor.execute('''
-                        INSERT INTO sale_items (sale_id, product_codigo, cantidad, subtotal)
-                        VALUES (%s, %s, %s, %s)
-                    ''', (sale_id, pi['codigo'], pi['cantidad'], pi['subtotal']))
-                    self.logger.debug(f"   ✓ Item {pi['codigo']} x {pi['cantidad']} = ${pi['subtotal']}")
-                
-                # Actualizar Caja
-                self.logger.info(f"📝 Actualizando estado de caja...")
-                if metodo_pago == "Efectivo":
-                    cursor.execute("UPDATE cash_box SET ventas_efectivo = ventas_efectivo + %s WHERE id = 1", (total_venta,))
-                else:
-                    cursor.execute("UPDATE cash_box SET ventas_digital = ventas_digital + %s WHERE id = 1", (total_venta,))
-                
-                # Actualizar Alias si aplica
-                if metodo_pago == "Transferencia" and alias:
-                    self.logger.info(f"📝 Actualizando alias: {alias}")
-                    cursor.execute("UPDATE aliases SET acumulado = acumulado + %s WHERE nombre = %s", (total_venta, alias))
-                
-                conn.commit()
-                self.logger.info(f"✅ Transacción confirmada")
-
-            # 5. Actualizar Stock (Llamada al StockService)
-            self.logger.info(f"📝 Actualizando stock de {len(processed_items)} productos...")
             for pi in processed_items:
-                # Restamos la cantidad vendida
-                self.stock_service.update_stock(pi['codigo'], -pi['cantidad'])
-                self.logger.debug(f"   ✓ Stock actualizado para {pi['codigo']}")
+                self.db.execute('''
+                    INSERT INTO sale_items (sale_id, product_codigo, cantidad, subtotal)
+                    VALUES (%s, %s, %s, %s)
+                ''', (sale_id, pi['codigo'], pi['cantidad'], pi['subtotal']))
+            
+            if metodo_pago == "Efectivo":
+                self.db.execute("UPDATE cash_box SET ventas_efectivo = ventas_efectivo + %s WHERE id = 1", (total_venta,))
+            else:
+                self.db.execute("UPDATE cash_box SET ventas_digital = ventas_digital + %s WHERE id = 1", (total_venta,))
+            
+            if metodo_pago == "Transferencia" and alias:
+                self.db.execute("UPDATE aliases SET acumulado = acumulado + %s WHERE nombre = %s", (total_venta, alias))
 
-            self.logger.info(f"✅ Venta completada: ID {sale_id} | Total: ${total_venta} | Método: {metodo_pago}")
+            for pi in processed_items:
+                self.stock_service.update_stock(pi['codigo'], -pi['cantidad'])
+
             return {
                 "status": "success", 
                 "message": "Venta procesada exitosamente.",

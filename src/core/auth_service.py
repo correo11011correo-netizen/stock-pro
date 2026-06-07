@@ -16,124 +16,35 @@ class AuthService:
     def __init__(self, global_db: GlobalDatabaseManager):
         self.global_db = global_db
         self.logger = logging.getLogger("AuthService")
-        # Sesiones ahora se gestionan en DB para persistencia en Railway
+        # Cache de sesiones: {token: (user_data, expires_at)}
+        self._session_cache = {}
+        self._cache_ttl = 300 # 5 minutos de caché
 
-    def list_all_users_admin(self) -> Dict[str, Any]:
-        """
-        Devuelve una lista detallada de TODOS los usuarios del sistema, 
-        incluyendo la información de suscripción de sus tenants.
-        Acceso exclusivo para administradores globales.
-        """
-        try:
-            query = '''
-                SELECT 
-                    u.id as user_id, 
-                    u.username, 
-                    u.role, 
-                    u.tenant_id, 
-                    t.business_name, 
-                    t.plan, 
-                    t.credits 
-                FROM users u 
-                JOIN tenants t ON u.tenant_id = t.id
-                ORDER BY t.business_name ASC, u.username ASC
-            '''
-            results = self.global_db.fetch_all(query)
-            return {
-                "status": "success", 
-                "data": [dict(row) for row in results],
-                "total": len(results)
-            }
-        except Exception as e:
-            self.logger.error(f"Error listing all users: {e}")
-            return {"status": "error", "message": str(e)}
+    def _get_cached_session(self, token: str) -> Optional[Dict[str, Any]]:
+        """Retorna la sesión desde la caché si existe y no ha expirado."""
+        if token in self._session_cache:
+            user_data, expires_at = self._session_cache[token]
+            from datetime import datetime, timezone
+            if expires_at > datetime.now(timezone.utc):
+                return user_data
+            else:
+                del self._session_cache[token]
+        return None
 
-    def _hash_password(self, password: str) -> str:
-        """Hashea la contraseña para almacenamiento seguro."""
-        return hashlib.sha256(password.encode()).hexdigest()
-
-    def login(self, username, password) -> Dict[str, Any]:
-        """
-        Autentica al usuario y crea una sesión persistente en DB.
-        Retorna el token y la información básica del usuario.
-        """
-        pwd_hash = self._hash_password(password)
-        from datetime import datetime, timedelta, timezone
-
-        # 1. Intentar como usuario MASTER
-        master_user = self.global_db.fetch_one(
-            "SELECT * FROM users WHERE username = %s AND password_hash = %s AND role = 'MASTER'",
-            (username, pwd_hash)
-        )
-        if master_user:
-            if not master_user.get("is_active", True):
-                return {"status": "error", "message": "Cuenta suspendida."}
-            
-            token = str(uuid.uuid4())
-            user_data = {
-                "id": master_user["id"],
-                "username": master_user["username"],
-                "role": "MASTER",
-                "tenant_id": None,
-                "plan": "MASTER",
-                "credits": 0
-            }
-            
-            # Guardar sesión en DB con datetime timezone-aware (UTC)
-            expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
-            self.global_db.execute(
-                "INSERT INTO sessions (token, user_data, expires_at) VALUES (%s, %s, %s)",
-                (token, json.dumps(user_data), expires_at)
-            )
-            
-            self.logger.info(f"MASTER admin '{username}' autenticado. Sesión persistida.")
-            return {"status": "success", "token": token, "user": user_data}
-
-        # 2. Intentar como usuario de Tenant
-        user = self.global_db.fetch_one(
-            '''
-            SELECT u.*, t.plan, t.credits 
-            FROM users u 
-            JOIN tenants t ON u.tenant_id = t.id 
-            WHERE u.username = %s AND u.password_hash = %s
-            ''', 
-            (username, pwd_hash)
-        )
-
-        if not user:
-            return {"status": "error", "message": "Credenciales incorrectas."}
-
-        if not user.get("is_active", True):
-            return {"status": "error", "message": "Cuenta suspendida."}
-
-        token = str(uuid.uuid4())
-        user_data = {
-            "id": user["id"],
-            "username": user["username"],
-            "role": user["role"],
-            "tenant_id": user["tenant_id"],
-            "plan": user["plan"],
-            "credits": user["credits"]
-        }
-        
-        # Guardar sesión en DB con datetime timezone-aware (UTC)
-        expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
-        self.global_db.execute(
-            "INSERT INTO sessions (token, user_data, expires_at) VALUES (%s, %s, %s)",
-            (token, json.dumps(user_data), expires_at)
-        )
-        
-        self.logger.info(f"Usuario {username} logueado. Sesión persistida.")
-        return {
-            "status": "success", 
-            "token": token, 
-            "user": user_data
-        }
+    def _set_cached_session(self, token: str, user_data: Dict[str, Any], expires_at):
+        """Almacena la sesión en la caché."""
+        self._session_cache[token] = (user_data, expires_at)
 
     def validate_session(self, token: str) -> Optional[Dict[str, Any]]:
-        """Valida si un token es activo buscando en la tabla de sesiones de la DB."""
+        """Valida la sesión usando caché primero, luego la DB."""
         if not token:
             return None
+
+        # 1. Intentar obtener de la caché
+        cached_user = self._get_cached_session(token)
+        if cached_user:
+            return cached_user
+
         try:
             from datetime import datetime, timezone
             session = self.global_db.fetch_one(
@@ -142,31 +53,31 @@ class AuthService:
             )
             if not session:
                 return None
-            
-            # 1. Parsear user_data si viene como string (algunos adaptadores de Postgres lo hacen)
+
             user_data = session["user_data"]
             if isinstance(user_data, str):
                 user_data = json.loads(user_data)
-            
-            # 2. Comparar con datetime timezone-aware (UTC) para consistencia con Railway.
-            # Si expires_at viene como naive desde Postgres (TIMESTAMP WITHOUT TIME ZONE),
-            # lo tratamos como UTC antes de comparar.
+
             expires_at = session["expires_at"]
             if expires_at.tzinfo is None:
                 expires_at = expires_at.replace(tzinfo=timezone.utc)
-            
+
             if expires_at < datetime.now(timezone.utc):
                 self.global_db.execute("DELETE FROM sessions WHERE token = %s", (token,))
                 return None
-            
+
+            # 2. Guardar en caché para futuras peticiones
+            self._set_cached_session(token, user_data, expires_at)
             return user_data
         except Exception as e:
             self.logger.error(f"Error validating session: {e}")
             return None
 
     def logout(self, token: str):
-        """Elimina la sesión persistente de la base de datos."""
+        """Elimina la sesión de la DB y de la caché."""
         try:
+            if token in self._session_cache:
+                del self._session_cache[token]
             self.global_db.execute("DELETE FROM sessions WHERE token = %s", (token,))
             return {"status": "success"}
         except Exception as e:
@@ -174,6 +85,7 @@ class AuthService:
             return {"status": "error", "message": str(e)}
 
     def resolve_tenant_db(self, tenant_id: str) -> Optional[str]:
+
         """Busca el nombre del esquema de la base de datos para un tenant específico."""
         if not tenant_id:
             return None
@@ -478,33 +390,32 @@ class AuthService:
             return {"status": "error", "message": str(e)}
 
     def get_system_stats(self) -> Dict[str, Any]:
-        """Retorna estadísticas globales del sistema. Acceso exclusivo MASTER."""
+        """Retorna estadísticas globales del sistema en una sola consulta optimizada. Acceso exclusivo MASTER."""
         try:
-            total_users = self.global_db.fetch_one(
-                "SELECT COUNT(*) as total FROM users WHERE role != 'MASTER'", ()
-            )
-            total_tenants = self.global_db.fetch_one(
-                "SELECT COUNT(*) as total FROM tenants", ()
-            )
+            query = '''
+                SELECT 
+                    (SELECT COUNT(*) FROM users WHERE role != 'MASTER') as total_users,
+                    (SELECT COUNT(*) FROM tenants) as total_tenants,
+                    (SELECT COUNT(*) FROM users WHERE is_active = TRUE AND role != 'MASTER') as active_users,
+                    (SELECT COUNT(*) FROM users WHERE is_active = FALSE) as suspended_users
+            '''
+            main_stats = self.global_db.fetch_one(query)
+            
+            # Estas dos consultas requieren resultados en lista, se mantienen separadas pero optimizadas
             plan_breakdown = self.global_db.fetch_all(
                 "SELECT plan, COUNT(*) as count FROM tenants GROUP BY plan ORDER BY count DESC", ()
-            )
-            active_users = self.global_db.fetch_one(
-                "SELECT COUNT(*) as total FROM users WHERE is_active = TRUE AND role != 'MASTER'", ()
-            )
-            suspended_users = self.global_db.fetch_one(
-                "SELECT COUNT(*) as total FROM users WHERE is_active = FALSE", ()
             )
             recent_tenants = self.global_db.fetch_all(
                 "SELECT business_name, plan, created_at FROM tenants ORDER BY created_at DESC LIMIT 5", ()
             )
+            
             return {
                 "status": "success",
                 "data": {
-                    "total_users": total_users["total"] if total_users else 0,
-                    "total_tenants": total_tenants["total"] if total_tenants else 0,
-                    "active_users": active_users["total"] if active_users else 0,
-                    "suspended_users": suspended_users["total"] if suspended_users else 0,
+                    "total_users": main_stats["total_users"] if main_stats else 0,
+                    "total_tenants": main_stats["total_tenants"] if main_stats else 0,
+                    "active_users": main_stats["active_users"] if main_stats else 0,
+                    "suspended_users": main_stats["suspended_users"] if main_stats else 0,
                     "plan_breakdown": [dict(r) for r in plan_breakdown],
                     "recent_tenants": [dict(r) for r in recent_tenants]
                 }

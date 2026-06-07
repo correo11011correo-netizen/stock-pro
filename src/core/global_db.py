@@ -100,6 +100,9 @@ class GlobalDatabaseManager:
                     )
                 ''')
                 
+                # Índice en token para acelerar la validación de sesión
+                cursor.execute('CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions (token)')
+                
                 # 7. Tabla de Configuración de Bots de WhatsApp (SaaS Multi-tenant)
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS user_bot_settings (
@@ -124,8 +127,15 @@ class GlobalDatabaseManager:
                     )
                 ''')
 
-                # Migración: convertir columna expires_at a TIMESTAMP WITH TIME ZONE si existe como naive
+                # --- OPTIMIZACIONES DE RENDIMIENTO (ÍNDICES) ---
+                # Acelerar login y búsqueda de usuarios por tenant
+                cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_username ON users (username)')
+                cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_tenant_id ON users (tenant_id)')
+                # Acelerar búsqueda de tenants por nombre o plan
+                cursor.execute('CREATE INDEX IF NOT EXISTS idx_tenants_business_name ON tenants (business_name)')
+                cursor.execute('CREATE INDEX IF NOT EXISTS idx_tenants_plan ON tenants (plan)')
 
+                # Migración: convertir columna expires_at a TIMESTAMP WITH TIME ZONE si existe como naive
                 cursor.execute('''
                     ALTER TABLE sessions
                         ALTER COLUMN expires_at TYPE TIMESTAMP WITH TIME ZONE

@@ -851,11 +851,70 @@ const app = {
             Toast.warning("Carrito vacío");
             return;
         }
-        this.showModal('modal-checkout');
+
+        const modal = document.getElementById('modal-checkout');
+        if (!modal) return;
+
+        // Calcular total para mostrar en el modal
+        let total = 0;
+        this.state.cart.forEach(item => {
+            total += (item.precio || item.price || 0) * (item.cantidad || item.quantity || 1);
+        });
+
+        // Inyectar selector de método de pago en el modal
+        const content = modal.querySelector('.modal-content');
+        if (content) {
+            content.innerHTML = `
+                <h3 style="margin-bottom:15px;">Confirmar Pago</h3>
+                <div style="margin-bottom:20px; font-size:1.2rem; font-weight:bold; text-align:center;">
+                    Total a Pagar: $${total.toFixed(2)}
+                </div>
+                
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem;">Método de Pago:</label>
+                    <select id="payment-method" onchange="app.togglePaymentFields()" style="width:100%; padding:10px; border-radius:8px; background:var(--surface); color:var(--text); border:1px solid var(--border);">
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Transferencia">🏦 Transferencia</option>
+                        <option value="Tarjeta">💳 Tarjeta</option>
+                    </select>
+                </div>
+
+                <div id="cash-fields" style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem;">Monto recibido:</label>
+                    <input type="number" id="payment-received" placeholder="0.00" style="width:100%; padding:10px; border-radius:8px; background:var(--surface); color:var(--text); border:1px solid var(--border);">
+                </div>
+
+                <div id="transfer-fields" class="hidden" style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:8px; font-size:0.9rem;">Alias del Cliente:</label>
+                    <input type="text" id="payment-alias" placeholder="Nombre del alias" style="width:100%; padding:10px; border-radius:8px; background:var(--surface); color:var(--text); border:1px solid var(--border);">
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="app.closeModal('modal-checkout')">Cancelar</button>
+                    <button class="btn btn-primary" onclick="app.confirmSale()">✅ Confirmar Pago</button>
+                </div>
+            `;
+        }
+        
+        modal.classList.remove('hidden');
+    },
+
+    togglePaymentFields() {
+        const method = document.getElementById('payment-method')?.value;
+        const cashFields = document.getElementById('cash-fields');
+        const transferFields = document.getElementById('transfer-fields');
+
+        if (cashFields) cashFields.classList.toggle('hidden', method !== 'Efectivo');
+        if (transferFields) transferFields.classList.toggle('hidden', method !== 'Transferencia');
     },
 
     async confirmSale() {
         Logger.log('SALES', '💰 Confirmando venta...');
+        
+        const method = document.getElementById('payment-method')?.value || 'Efectivo';
+        const pagaCon = parseFloat(document.getElementById('payment-received')?.value || 0);
+        const alias = document.getElementById('payment-alias')?.value || null;
+
         const items = this.state.cart.map(item => ({
             codigo: item.codigo || item.code,
             cantidad: item.cantidad || item.quantity || 1
@@ -866,21 +925,21 @@ const app = {
             total += (item.precio || item.price || 0) * (item.cantidad || item.quantity || 1);
         });
 
-        Logger.log('SALES', `Items: ${items.length}, Total: $${total.toFixed(2)}`);
+        Logger.log('SALES', `Items: ${items.length}, Total: $${total.toFixed(2)}, Método: ${method}`);
         
         const res = await this.apiCall('venta.cobrar', { 
             cliente: "General", 
             items: items, 
-            metodo_pago: "Efectivo", 
-            paga_con: total,
-            alias: null 
+            metodo_pago: method, 
+            paga_con: total > 0 ? (method === 'Efectivo' ? pagaCon : total) : 0,
+            alias: alias 
         });
         
         Logger.log('SALES', 'Respuesta:', res);
         
         if (res.status === 'success') {
             Logger.success('SALES', '✅ Venta registrada');
-            Toast.success('Venta registrada');
+            Toast.success(`Venta registrada. Vuelto: $${(res.vuelto || 0).toFixed(2)}`);
             this.state.cart = [];
             this.renderCart();
             this.closeModal('modal-checkout');

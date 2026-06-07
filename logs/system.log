@@ -684,3 +684,204 @@ json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes:
 2026-06-07 10:36:19,548 [INFO] root: "GET /app.js HTTP/1.1" 200 -
 2026-06-07 10:36:24,577 [INFO] root: "GET / HTTP/1.1" 200 -
 2026-06-07 10:36:24,888 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:39:48,194 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:39:54,951 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:39:58,714 [INFO] root: RAW BODY RECEIVED: {"username":"asd","password":"asd"}
+2026-06-07 10:39:58,715 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:40:00,991 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:40:00,991 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:40:01,753 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 403 -
+2026-06-07 10:40:23,456 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 403 -
+2026-06-07 10:40:24,866 [INFO] root: "GET /admin HTTP/1.1" 200 -
+2026-06-07 10:40:28,753 [INFO] root: RAW BODY RECEIVED: {"username":"123","password":"123"}
+2026-06-07 10:40:28,753 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:40:30,272 [INFO] AuthService: MASTER admin '123' autenticado. Sesión persistida.
+2026-06-07 10:40:30,273 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:40:37,736 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:40:38,497 [INFO] root: "GET /api/admin/tenants?page=1&per_page=20&search= HTTP/1.1" 200 -
+2026-06-07 10:40:46,193 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:42:43,155 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:42:43,405 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:42:46,789 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","params":{"username":"asd","password":"asd"},"role":"empleado","is_pro":false}
+2026-06-07 10:42:46,790 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:42:48,925 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:42:48,925 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:42:49,227 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","params":{"username":"asd","password":"asd"},"role":"empleado","is_pro":false}
+2026-06-07 10:42:49,228 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:42:49,233 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:42:51,891 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:42:54,242 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:42:54,370 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:42:54,372 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:42:54,678 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:42:57,275 [INFO] root: RAW BODY RECEIVED: {"command":"venta.search","params":{"search":"as"},"role":"OWNER","is_pro":false}
+2026-06-07 10:42:57,479 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:42:58,475 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:07,016 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:43:07,018 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:43:07,018 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:43:07,256 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:43:11,575 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:11,575 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:11,576 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:12,042 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:15,098 [INFO] root: RAW BODY RECEIVED: {"command":"venta.add","params":{"codigo":"asd"},"role":"OWNER","is_pro":false}
+2026-06-07 10:43:17,208 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:43:17,596 [INFO] root: RAW BODY RECEIVED: {"command":"venta.add","params":{"codigo":"asd"},"role":"OWNER","is_pro":false}
+2026-06-07 10:43:18,195 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:19,704 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:43:20,690 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:22,537 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":6}],"metodo_pago":"Efectivo","paga_con":738,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:43:23,797 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":6}],"metodo_pago":"Efectivo","paga_con":738,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:43:26,071 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:43:26,580 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":6}],"metodo_pago":"Efectivo","paga_con":738,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:43:26,780 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:43:28,504 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 6
+2026-06-07 10:43:28,521 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:28,891 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:43:29,225 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 6
+2026-06-07 10:43:29,226 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:43:29,633 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 6
+2026-06-07 10:43:29,634 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:47:25,921 [INFO] root: RAW BODY RECEIVED: {"username": "123", "password": "123"}
+2026-06-07 10:47:25,922 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:47:27,349 [INFO] AuthService: MASTER admin '123' autenticado. Sesión persistida.
+2026-06-07 10:47:27,350 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:47:28,357 [INFO] root: "GET /api/health HTTP/1.1" 200 -
+2026-06-07 10:47:29,389 [INFO] root: "GET /api/config HTTP/1.1" 200 -
+2026-06-07 10:47:30,404 [INFO] root: RAW BODY RECEIVED: {"username": "123", "password": "123"}
+2026-06-07 10:47:30,405 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:47:31,818 [INFO] AuthService: MASTER admin '123' autenticado. Sesión persistida.
+2026-06-07 10:47:31,819 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:47:38,466 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:47:40,966 [INFO] root: "GET /api/admin/tenants HTTP/1.1" 200 -
+2026-06-07 10:47:44,084 [INFO] root: "GET /api/admin/users HTTP/1.1" 200 -
+2026-06-07 10:47:47,203 [INFO] root: "GET /api/admin/audit-logs HTTP/1.1" 200 -
+2026-06-07 10:47:48,221 [INFO] root: RAW BODY RECEIVED: {"command": "sys.info"}
+2026-06-07 10:47:48,946 [INFO] CommandDispatcher: GOD_MODE: Ejecutando sys.info como Super Admin.
+2026-06-07 10:47:48,947 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:48:50,054 [INFO] root: "GET / HTTP/1.1" 200 -
+2026-06-07 10:48:50,421 [INFO] root: "GET /app.js HTTP/1.1" 200 -
+2026-06-07 10:48:53,160 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","params":{"username":"asd","password":"asd"},"role":"empleado","is_pro":false}
+2026-06-07 10:48:53,161 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:48:55,270 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:48:55,271 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:48:55,324 [INFO] root: RAW BODY RECEIVED: {"command":"auth.login","params":{"username":"asd","password":"asd"},"role":"empleado","is_pro":false}
+2026-06-07 10:48:55,324 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:48:55,577 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:48:57,782 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:00,565 [INFO] root: RAW BODY RECEIVED: {"command":"venta.search","params":{"search":"as"},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:03,885 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:49:03,886 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:04,193 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:07,001 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:49:07,002 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:49:07,732 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:49:08,676 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:49:10,103 [INFO] root: RAW BODY RECEIVED: {"command":"stock.list","params":{"filter":""},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:10,107 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:10,348 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:10,556 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:10,836 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:12,285 [INFO] CommandDispatcher: Executing command: stock.list | User Role: OWNER
+2026-06-07 10:49:12,390 [INFO] root: RAW BODY RECEIVED: {"command":"venta.add","params":{"codigo":"asd"},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:13,248 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:14,566 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:49:15,532 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:18,917 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:19,720 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:20,191 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:20,349 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:27,823 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:28,789 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:28,790 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:29,534 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:30,038 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:30,044 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:33,215 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:33,216 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:33,216 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:33,217 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:33,717 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:33,720 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:38,316 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:38,524 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:38,569 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:41,519 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:50,469 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:51,336 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:51,337 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:51,337 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:51,709 [INFO] root: RAW BODY RECEIVED: {"command":"venta.cobrar","params":{"cliente":"General","items":[{"codigo":"asd","cantidad":2}],"metodo_pago":"Efectivo","paga_con":0,"alias":null},"role":"OWNER","is_pro":false}
+2026-06-07 10:49:51,817 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:53,577 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:53,758 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:49:55,948 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:55,949 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:55,950 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:55,951 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:57,675 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:57,675 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:57,676 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:57,676 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:57,678 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:57,678 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:49:58,163 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 123.000 | Solicitado: 2
+2026-06-07 10:49:58,164 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:50:08,709 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 10:50:08,710 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:50:10,945 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:50:10,945 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:50:11,961 [INFO] root: RAW BODY RECEIVED: {"command": "venta.search", "token": "0c8d8b9b-c282-4cd4-8021-4da99916570b", "search": "a"}
+2026-06-07 10:50:14,167 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:50:15,145 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:50:16,152 [INFO] root: RAW BODY RECEIVED: {"command": "venta.add", "token": "0c8d8b9b-c282-4cd4-8021-4da99916570b", "codigo": "asdd"}
+2026-06-07 10:50:18,380 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:50:19,349 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:52:32,376 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 10:52:32,377 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:52:34,595 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:52:34,595 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:52:35,602 [INFO] root: RAW BODY RECEIVED: {"command": "venta.search", "token": "c5de99bf-4ee5-4729-8c50-6d89ba6b3689", "search": "a"}
+2026-06-07 10:52:37,820 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:52:38,787 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:52:39,794 [INFO] root: RAW BODY RECEIVED: {"command": "venta.add", "token": "c5de99bf-4ee5-4729-8c50-6d89ba6b3689", "codigo": "asdd"}
+2026-06-07 10:52:42,004 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:52:42,973 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:52:44,003 [INFO] root: RAW BODY RECEIVED: {"command": "venta.cobrar", "token": "c5de99bf-4ee5-4729-8c50-6d89ba6b3689", "cliente": "General", "items": [{"codigo": "asdd", "cantidad": 1}], "metodo_pago": "Efectivo", "paga_con": 1000, "alias": null}
+2026-06-07 10:52:46,213 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:52:47,180 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 32.000 | Solicitado: 1
+2026-06-07 10:52:47,182 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:54:22,482 [INFO] root: "GET /api/admin/users?page=1&per_page=30&search= HTTP/1.1" 200 -
+2026-06-07 10:54:39,448 [INFO] root: "GET /api/admin/audit-logs?page=1&per_page=50 HTTP/1.1" 200 -
+2026-06-07 10:56:44,226 [INFO] root: RAW BODY RECEIVED: {"username": "123", "password": "123"}
+2026-06-07 10:56:44,226 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:56:45,703 [INFO] AuthService: MASTER admin '123' autenticado. Sesión persistida.
+2026-06-07 10:56:45,703 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:56:46,710 [INFO] root: "GET /api/health HTTP/1.1" 200 -
+2026-06-07 10:56:47,725 [INFO] root: "GET /api/config HTTP/1.1" 200 -
+2026-06-07 10:56:48,751 [INFO] root: RAW BODY RECEIVED: {"username": "123", "password": "123"}
+2026-06-07 10:56:48,752 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:56:50,229 [INFO] AuthService: MASTER admin '123' autenticado. Sesión persistida.
+2026-06-07 10:56:50,229 [INFO] root: "POST /api/auth/login HTTP/1.1" 200 -
+2026-06-07 10:56:57,132 [INFO] root: "GET /api/admin/dashboard HTTP/1.1" 200 -
+2026-06-07 10:56:59,452 [INFO] root: "GET /api/admin/tenants HTTP/1.1" 200 -
+2026-06-07 10:57:02,683 [INFO] root: "GET /api/admin/users HTTP/1.1" 200 -
+2026-06-07 10:57:05,898 [INFO] root: "GET /api/admin/audit-logs HTTP/1.1" 200 -
+2026-06-07 10:57:06,927 [INFO] root: RAW BODY RECEIVED: {"command": "sys.info"}
+2026-06-07 10:57:07,664 [INFO] CommandDispatcher: GOD_MODE: Ejecutando sys.info como Super Admin.
+2026-06-07 10:57:07,664 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:59:23,200 [INFO] root: RAW BODY RECEIVED: {"command": "auth.login", "username": "asd", "password": "asd"}
+2026-06-07 10:59:23,201 [INFO] CommandDispatcher: Executing command: auth.login | User Role: empleado
+2026-06-07 10:59:25,415 [INFO] AuthService: Usuario asd logueado. Sesión persistida.
+2026-06-07 10:59:25,415 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:59:26,426 [INFO] root: RAW BODY RECEIVED: {"command": "venta.search", "token": "d9ff9fe7-57bd-4d27-9400-4a398816ca97", "search": "a"}
+2026-06-07 10:59:28,637 [INFO] CommandDispatcher: Executing command: venta.search | User Role: OWNER
+2026-06-07 10:59:29,606 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:59:30,626 [INFO] root: RAW BODY RECEIVED: {"command": "venta.add", "token": "d9ff9fe7-57bd-4d27-9400-4a398816ca97", "codigo": "asdd"}
+2026-06-07 10:59:32,830 [INFO] CommandDispatcher: Executing command: venta.add | User Role: OWNER
+2026-06-07 10:59:33,805 [INFO] root: "POST / HTTP/1.1" 200 -
+2026-06-07 10:59:34,813 [INFO] root: RAW BODY RECEIVED: {"command": "venta.cobrar", "token": "d9ff9fe7-57bd-4d27-9400-4a398816ca97", "cliente": "General", "items": [{"codigo": "asdd", "cantidad": 1}], "metodo_pago": "Efectivo", "paga_con": 1000, "alias": null}
+2026-06-07 10:59:37,024 [INFO] CommandDispatcher: Executing command: venta.cobrar | User Role: OWNER
+2026-06-07 10:59:37,998 [DEBUG] SalesService: DEBUG STOCK: Producto asd | Disponible: 32.000 | Solicitado: 1
+2026-06-07 10:59:38,003 [INFO] root: "POST / HTTP/1.1" 200 -
