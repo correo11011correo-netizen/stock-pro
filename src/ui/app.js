@@ -151,6 +151,13 @@ const app = {
     // VISTA - NAVEGACIÓN
     // ─────────────────────────────────────────────────────────────
     switchView(viewId) {
+        // Bloquear acceso a vistas protegidas si no hay token
+        const publicViews = ['view-login', 'view-register'];
+        if (!this.state.token && !publicViews.includes(viewId)) {
+            Logger.warn('AUTH', `Acceso denegado a ${viewId}. Redirigiendo al login.`);
+            viewId = 'view-login';
+        }
+
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId)?.classList.add('active');
 
